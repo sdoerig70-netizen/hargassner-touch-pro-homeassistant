@@ -1,0 +1,58 @@
+start_ignition:
+  name: Zündung starten
+  description: Startet die Zündung des Heizkessels.
+  fields:
+    anlage:
+      name: Anlage
+      description: Name oder ID der Anlage. Leer = erste Anlage mit dieser Aktion.
+      required: false
+      selector:
+        text:
+
+set_parameter:
+  name: Parameter setzen
+  description: Setzt einen beliebigen schreibbaren Parameter eines Bausteins.
+  fields:
+    baustein:
+      name: Baustein
+      description: z. B. «Kessel», «Heizkreis 1», «Warmwasser 1» oder der Name aus der App.
+      required: true
+      example: Heizkreis 1
+      selector:
+        text:
+    parameter:
+      name: Parameter
+      description: Technischer Schlüssel, z. B. room_temperature_heating.
+      required: true
+      example: room_temperature_heating
+      selector:
+        text:
+    wert:
+      name: Wert
+      description: Neuer Wert (Zahl, Text oder true/false).
+      required: true
+      example: "21.5"
+      selector:
+        text:
+    anlage:
+      name: Anlage
+      description: Name oder ID der Anlage. Leer = alle Anlagen durchsuchen.
+      required: false
+      selector:
+        text:
+
+set_time_program:
+  name: Zeitprogramm setzen
+  description: Speichert die Wochenuhr eines Heizkreises oder Warmwassers.
+  target:
+    entity:
+      integration: hargassner_touch_pro
+      domain: sensor
+  fields:
+    eintraege:
+      name: Einträge
+      description: Liste mit Tagen (MO–SU) und bis zu zwei Zeitfenstern je Eintrag, z. B. «T06:00PT2H» für 06:00–08:00 oder «T00:00P1D» für den ganzen Tag.
+      required: true
+      example: '[{"days": ["MO","TU","WE","TH","FR"], "times": ["T06:00PT2H", "T16:00PT6H"]}, {"days": ["SA","SU"], "times": ["T07:00PT15H"]}]'
+      selector:
+        object:

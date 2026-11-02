@@ -1,0 +1,99 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit Hargassner Touch Pro verbinden",
+        "description": "Gib die Zugangsdaten deiner Hargassner-App ein.",
+        "data": {
+          "email": "E-Mail-Adresse",
+          "password": "Passwort"
+        }
+      },
+      "installation": {
+        "title": "Anlage auswählen",
+        "description": "Für dieses Konto gibt es mehrere Anlagen. Wähle eine aus.",
+        "data": {
+          "installation_id": "Anlage"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Neu anmelden",
+        "description": "Die Anmeldung bei der Hargassner-Cloud ist abgelaufen. Gib das Passwort erneut ein.",
+        "data": {
+          "password": "Passwort"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "E-Mail-Adresse oder Passwort ist falsch.",
+      "cannot_connect": "Die Hargassner-Cloud ist nicht erreichbar.",
+      "no_installations": "Für dieses Konto gibt es keine Anlagen.",
+      "unknown": "Unerwarteter Fehler. Details stehen im Protokoll."
+    },
+    "abort": {
+      "already_configured": "Diese Anlage ist bereits eingerichtet.",
+      "reauth_successful": "Neu angemeldet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Hargassner-Touch-Pro-Optionen",
+        "data": {
+          "scan_interval": "Abfrageintervall (Sekunden)",
+          "metrics": "Alle Messkanäle laden",
+          "writable": "Einstellungen und Aktionen anlegen"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft die Cloud abgefragt wird (30–600 Sekunden).",
+          "metrics": "Lädt zusätzlich alle Messkanäle aus der Verlaufsaufzeichnung (gleiche Werte wie in den Diagrammen der App).",
+          "writable": "Legt für alle schreibbaren Parameter Zahlen, Auswahlen, Schalter, Texte und Tasten an. Aus = nur lesen."
+        }
+      }
+    }
+  },
+  "services": {
+    "start_ignition": {
+      "name": "Zündung starten",
+      "description": "Startet die Zündung des Heizkessels.",
+      "fields": {
+        "anlage": {
+          "name": "Anlage",
+          "description": "Name oder ID der Anlage. Leer = erste Anlage mit dieser Aktion."
+        }
+      }
+    },
+    "set_parameter": {
+      "name": "Parameter setzen",
+      "description": "Setzt einen beliebigen schreibbaren Parameter eines Bausteins, auch wenn dafür keine Entität angelegt ist.",
+      "fields": {
+        "baustein": {
+          "name": "Baustein",
+          "description": "z. B. «Kessel», «Heizkreis 1», «Warmwasser 1» oder der Name aus der App."
+        },
+        "parameter": {
+          "name": "Parameter",
+          "description": "Technischer Schlüssel, z. B. room_temperature_heating. Die Liste steht in der Diagnose."
+        },
+        "wert": {
+          "name": "Wert",
+          "description": "Neuer Wert (Zahl, Text oder true/false)."
+        },
+        "anlage": {
+          "name": "Anlage",
+          "description": "Name oder ID der Anlage. Leer = alle Anlagen durchsuchen."
+        }
+      }
+    },
+    "set_time_program": {
+      "name": "Zeitprogramm setzen",
+      "description": "Speichert die Wochenuhr eines Heizkreises oder Warmwassers.",
+      "fields": {
+        "eintraege": {
+          "name": "Einträge",
+          "description": "Liste mit Tagen (MO–SU) und bis zu zwei Zeitfenstern je Eintrag, z. B. «T06:00PT2H» für 06:00–08:00."
+        }
+      }
+    }
+  }
+}

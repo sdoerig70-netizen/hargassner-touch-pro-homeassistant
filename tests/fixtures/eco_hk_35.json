@@ -1,0 +1,703 @@
+{
+ "widgets": [
+  {
+   "widget": "WEATHER",
+   "number": null,
+   "values": {
+    "name": "Wetterort",
+    "timestamp_sunrise": "2026-10-31T06:04:54+00:00",
+    "timestamp_sunset": "2026-10-31T16:08:07+00:00",
+    "daytime": false,
+    "state": "WEATHER_CLOUD_MASS",
+    "temperature_current": 7.1,
+    "cloud_percent": 100,
+    "air_humidity": 72,
+    "air_pressure": 1028,
+    "wind_degree": 38,
+    "wind_speed": 3.97,
+    "precip_amount": 0,
+    "forecast": {
+     "hourly": [
+      {
+       "temperature_current": 6.34,
+       "state": "WEATHER_CLOUD",
+       "daytime": false,
+       "timestamp": "2026-11-01T03:00:00Z"
+      },
+      {
+       "temperature_current": 5.93,
+       "state": "WEATHER_CLOUD",
+       "daytime": false,
+       "timestamp": "2026-11-01T06:00:00Z"
+      }
+     ],
+     "daily": [
+      {
+       "temperature_max": 8.02,
+       "temperature_min": 3.31,
+       "state": "WEATHER_CLOUD_MASS",
+       "timestamp": "2026-11-02"
+      },
+      {
+       "temperature_max": 6.88,
+       "temperature_min": 3.95,
+       "state": "WEATHER_CLOUD_MASS",
+       "timestamp": "2026-11-03"
+      }
+     ]
+    }
+   },
+   "parameters": {},
+   "actions": {}
+  },
+  {
+   "widget": "HEATER",
+   "number": null,
+   "values": {
+    "name": "Musteranlage",
+    "device_type": "Eco-HK 35.4",
+    "state": "STATE_OFF",
+    "smoke_temperature": 66.9,
+    "heater_temperature_target": null,
+    "heater_temperature_current": 72.1,
+    "heater_exhaust_guard": false,
+    "outdoor_temperature": 7.7,
+    "outdoor_temperature_average": 8,
+    "efficiency": 0
+   },
+   "parameters": {
+    "program": {
+     "resource": "/installations/4711/widgets/heater/parameters/program",
+     "value": "PROGRAM_AUTOMATIC",
+     "options": [
+      "PROGRAM_OFF",
+      "PROGRAM_BOILER",
+      "PROGRAM_AUTOMATIC",
+      "PROGRAM_STOP_FIRING"
+     ],
+     "chatbot": "devices/99/parameters/PR001/chatbot/query"
+    }
+   },
+   "actions": {}
+  },
+  {
+   "widget": "BUFFER",
+   "number": null,
+   "values": {
+    "state": "STATE_ON",
+    "buffer_charge": 99,
+    "capacity": 2021,
+    "buffer_temperature_top": 75.2,
+    "buffer_temperature_center": 75.7,
+    "buffer_temperature_bottom": 66.1,
+    "pump_active": true,
+    "max_requirement": 45.3
+   },
+   "parameters": {
+    "name": {
+     "resource": "/installations/4711/widgets/buffer/default/parameters/name",
+     "value": "",
+     "regex": "^[0-9A-Za-z \\+\\-öüäÖÜÄß\\!\\?'\\#\\*&%\\$\\/\\(\\)\\=\\:@\\.\\#,\\<\\>_´áúóéí]*$",
+     "chatbot": "devices/99/parameters/C2aa/chatbot/query"
+    }
+   },
+   "actions": {}
+  },
+  {
+   "widget": "HEATING_CIRCUIT_RADIATOR",
+   "number": "1",
+   "values": {
+    "name": "Altbau",
+    "state": "STATE_HEATING",
+    "flow_temperature_target": 45.3,
+    "flow_temperature_current": 46.4,
+    "room_temperature_target": 22,
+    "room_temperature_current": null,
+    "outdoor_temperature": 7.7,
+    "outdoor_temperature_average": 8,
+    "pump_active": true,
+    "active": true
+   },
+   "parameters": {
+    "weather_mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/weather-mode",
+     "value": "WEATHER_ECO",
+     "options": [
+      "WEATHER_OFF",
+      "WEATHER_ECO",
+      "WEATHER_ECO_PLUS"
+     ],
+     "chatbot": "devices/99/parameters/A5b/chatbot/query"
+    },
+    "mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/mode",
+     "value": "MODE_AUTOMATIC",
+     "options": [
+      "MODE_OFF",
+      "MODE_AUTOMATIC",
+      "MODE_HEATING",
+      "MODE_BRIDGE_REDUCTION",
+      "MODE_REDUCTION",
+      "MODE_BRIDGE_HEATING"
+     ],
+     "chatbot": "devices/99/parameters/PR011/chatbot/query"
+    },
+    "name": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/name",
+     "value": "Altbau",
+     "regex": "^[0-9A-Za-z \\+\\-öüäÖÜÄß\\!\\?'\\#\\*&%\\$\\/\\(\\)\\=\\:@\\.\\#,\\<\\>_´áúóéí]*$",
+     "chatbot": "devices/99/parameters/A1a/chatbot/query"
+    },
+    "room_temperature_correction": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/room-temperature-correction",
+     "value": 0,
+     "min": -3,
+     "max": 3,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/A6d/chatbot/query"
+    },
+    "automatic_times_weekly": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/automatic-times-weekly",
+     "items": [
+      {
+       "days": [
+        "SU",
+        "MO",
+        "TU",
+        "WE",
+        "TH",
+        "FR",
+        "SA"
+       ],
+       "times": [
+        "T00:00P1D"
+       ]
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      }
+     ],
+     "step": "PT15M",
+     "limit": 7,
+     "chatbot": "devices/99/parameters/3a/chatbot/query"
+    },
+    "holiday_mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/holiday-mode",
+     "items": [],
+     "step": "PT15M"
+    },
+    "room_temperature_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/room-temperature-heating",
+     "value": 20,
+     "min": 14,
+     "max": 26,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/4/chatbot/query"
+    },
+    "room_temperature_reduction": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/room-temperature-reduction",
+     "value": 20,
+     "min": 8,
+     "max": 24,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/5/chatbot/query"
+    },
+    "pool_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/bathroom-heating",
+     "value": "POOL_HEATING_OFF",
+     "options": [
+      "POOL_HEATING_OFF",
+      "POOL_HEATING_ON",
+      "POOL_HEATING_AUTOMATIC"
+     ],
+     "chatbot": "devices/99/parameters/A8/chatbot/query"
+    },
+    "deactivation_limit_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-heating",
+     "value": 16,
+     "min": 0,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/11/chatbot/query"
+    },
+    "deactivation_limit_reduction_day": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-reduction-day",
+     "value": 14,
+     "min": -40,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/12/chatbot/query"
+    },
+    "deactivation_limit_reduction_night": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-reduction-night",
+     "value": 14,
+     "min": -40,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/13/chatbot/query"
+    },
+    "steepness": {
+     "resource": "/installations/4711/widgets/heating-circuits/1/parameters/steepness",
+     "value": 1.3,
+     "min": 0.2,
+     "max": 3.5,
+     "step": 0.05,
+     "unit": "",
+     "chatbot": "devices/99/parameters/A2/chatbot/query"
+    }
+   },
+   "actions": {}
+  },
+  {
+   "widget": "HEATING_CIRCUIT_RADIATOR",
+   "number": "2",
+   "values": {
+    "name": "Neubau",
+    "state": "STATE_HEATING",
+    "flow_temperature_target": 45.3,
+    "flow_temperature_current": 46.4,
+    "room_temperature_target": 22,
+    "room_temperature_current": null,
+    "outdoor_temperature": 7.7,
+    "outdoor_temperature_average": 8,
+    "pump_active": true,
+    "active": true
+   },
+   "parameters": {
+    "weather_mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/weather-mode",
+     "value": "WEATHER_ECO",
+     "options": [
+      "WEATHER_OFF",
+      "WEATHER_ECO",
+      "WEATHER_ECO_PLUS"
+     ],
+     "chatbot": "devices/99/parameters/A15b/chatbot/query"
+    },
+    "mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/mode",
+     "value": "MODE_AUTOMATIC",
+     "options": [
+      "MODE_OFF",
+      "MODE_AUTOMATIC",
+      "MODE_HEATING",
+      "MODE_BRIDGE_REDUCTION",
+      "MODE_REDUCTION",
+      "MODE_BRIDGE_HEATING"
+     ],
+     "chatbot": "devices/99/parameters/PR012/chatbot/query"
+    },
+    "name": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/name",
+     "value": "Neubau",
+     "regex": "^[0-9A-Za-z \\+\\-öüäÖÜÄß\\!\\?'\\#\\*&%\\$\\/\\(\\)\\=\\:@\\.\\#,\\<\\>_´áúóéí]*$",
+     "chatbot": "devices/99/parameters/A11a/chatbot/query"
+    },
+    "room_temperature_correction": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/room-temperature-correction",
+     "value": 0,
+     "min": -3,
+     "max": 3,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/A16d/chatbot/query"
+    },
+    "automatic_times_weekly": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/automatic-times-weekly",
+     "items": [
+      {
+       "days": [
+        "MO",
+        "TU",
+        "WE",
+        "TH",
+        "FR",
+        "SA",
+        "SU"
+       ],
+       "times": [
+        "T00:00P1D"
+       ]
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      },
+      {
+       "days": [],
+       "times": []
+      }
+     ],
+     "step": "PT15M",
+     "limit": 7,
+     "chatbot": "devices/99/parameters/6a/chatbot/query"
+    },
+    "holiday_mode": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/holiday-mode",
+     "items": [],
+     "step": "PT15M"
+    },
+    "room_temperature_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/room-temperature-heating",
+     "value": 22,
+     "min": 14,
+     "max": 26,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/7/chatbot/query"
+    },
+    "room_temperature_reduction": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/room-temperature-reduction",
+     "value": 20,
+     "min": 8,
+     "max": 24,
+     "step": 0.5,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/8/chatbot/query"
+    },
+    "pool_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/bathroom-heating",
+     "value": "POOL_HEATING_OFF",
+     "options": [
+      "POOL_HEATING_OFF",
+      "POOL_HEATING_ON",
+      "POOL_HEATING_AUTOMATIC"
+     ],
+     "chatbot": "devices/99/parameters/A18/chatbot/query"
+    },
+    "deactivation_limit_heating": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-heating",
+     "value": 16,
+     "min": 0,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/11/chatbot/query"
+    },
+    "deactivation_limit_reduction_day": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-reduction-day",
+     "value": 14,
+     "min": -40,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/12/chatbot/query"
+    },
+    "deactivation_limit_reduction_night": {
+     "resource": "/installations/4711/widgets/heating-circuits/all/parameters/deactivation-limit-reduction-night",
+     "value": 14,
+     "min": -40,
+     "max": 50,
+     "step": 1,
+     "unit": "°C",
+     "chatbot": "devices/99/parameters/13/chatbot/query"
+    },
+    "steepness": {
+     "resource": "/installations/4711/widgets/heating-circuits/2/parameters/steepness",
+     "value": 1.6,
+     "min": 0.2,
+     "max": 3.5,
+     "step": 0.05,
+     "unit": "",
+     "chatbot": "devices/99/parameters/A12/chatbot/query"
+    }
+   },
+   "actions": {}
+  },
+  {
+   "widget": "FRESH_WATER",
+   "number": "1",
+   "values": {
+    "name": "Neubau",
+    "valve_temperature_target": 53,
+    "flow_temperature_current": 75.2,
+    "flow_rate": null,
+    "pump_active": false,
+    "flow_count_daily": 1.5,
+    "flow_count_total": 347
+   },
+   "parameters": {
+    "name": {
+     "resource": "/installations/4711/widgets/fresh-water/1/parameters/name",
+     "value": "Neubau",
+     "regex": "^[0-9A-Za-z \\+\\-öüäÖÜÄß\\!\\?'\\#\\*&%\\$\\/\\(\\)\\=\\:@\\.\\#,\\<\\>_´áúóéí]*$",
+     "chatbot": "devices/99/parameters/B106a/chatbot/query"
+    }
+   },
+   "actions": {}
+  }
+ ],
+ "metric_fields": [
+  {
+   "text": "Kessel",
+   "fields": [
+    {
+     "id": "heater.heater_temperature_current",
+     "text": "Kessel Temperatur Ist",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.heater_temperature_target",
+     "text": "Kessel Temperatur Soll",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.smoke_temperature",
+     "text": "Rauchgastemperatur",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.efficiency",
+     "text": "Leistung",
+     "unit": "%"
+    },
+    {
+     "id": "heater.heater_oxygen_is",
+     "text": "Sauerstoffgehalt Ist",
+     "unit": "%"
+    },
+    {
+     "id": "heater.heater_oxygen_target",
+     "text": "Sauerstoffgehalt Soll",
+     "unit": "%"
+    },
+    {
+     "id": "heater.heater_backflow_is",
+     "text": "Rücklauf Temperatur Ist",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.heater_backflow_target",
+     "text": "Rücklauf Temperatur Soll",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.max_power",
+     "text": "Höchste Anforderung",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.system_pressure",
+     "text": "Systemdruck",
+     "unit": "bar"
+    },
+    {
+     "id": "heater.fuel_stock",
+     "text": "Lagerstand",
+     "unit": "kg"
+    },
+    {
+     "id": "heater.outdoor_temperature",
+     "text": "Außentemperatur",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.outdoor_temperature_average",
+     "text": "Außentemperatur gemittelt",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.error_available",
+     "text": "Störung",
+     "unit": null
+    }
+   ]
+  },
+  {
+   "text": "Kombi (PK)",
+   "fields": [
+    {
+     "id": "heater.combination.heater_temperature_current",
+     "text": "Temperatur Kombi (PK)",
+     "unit": "°C"
+    },
+    {
+     "id": "heater.combination.efficiency",
+     "text": "Leistung Kombi (PK)",
+     "unit": "%"
+    },
+    {
+     "id": "heater.combination.fuel_stock",
+     "text": "Lagerstand Kombi (PK)",
+     "unit": "kg"
+    }
+   ]
+  },
+  {
+   "text": "Altbau",
+   "fields": [
+    {
+     "id": "heating_circuit.flow_temperature_current.1",
+     "text": "Temperatur Vorlauf (HK 1)",
+     "unit": "°C"
+    },
+    {
+     "id": "heating_circuit.room_temperature_current.1",
+     "text": "Raumtemperatur (HK 1)",
+     "unit": "°C"
+    },
+    {
+     "id": "heating_circuit.pump_active.1",
+     "text": "Pumpe aktiv (HK 1)",
+     "unit": null
+    },
+    {
+     "id": "heating_circuit.humidity.1",
+     "text": "Luftfeuchte (HK 1)",
+     "unit": "%"
+    }
+   ]
+  },
+  {
+   "text": "Neubau",
+   "fields": [
+    {
+     "id": "heating_circuit.flow_temperature_current.2",
+     "text": "Temperatur Vorlauf (HK 2)",
+     "unit": "°C"
+    },
+    {
+     "id": "heating_circuit.room_temperature_current.2",
+     "text": "Raumtemperatur (HK 2)",
+     "unit": "°C"
+    },
+    {
+     "id": "heating_circuit.pump_active.2",
+     "text": "Pumpe aktiv (HK 2)",
+     "unit": null
+    },
+    {
+     "id": "heating_circuit.humidity.2",
+     "text": "Luftfeuchte (HK 2)",
+     "unit": "%"
+    },
+    {
+     "id": "fresh_water.buffer_temperature_current.1",
+     "text": "FWS Fühler (FWS 1)",
+     "unit": "°C"
+    },
+    {
+     "id": "fresh_water.flow_temperature_current.1",
+     "text": "FWS Vorlauf (FWS 1)",
+     "unit": "°C"
+    }
+   ]
+  },
+  {
+   "text": "Puffer",
+   "fields": [
+    {
+     "id": "buffer.temperature_top.default",
+     "text": "Temperatur (oben) (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.temperature_center_top.default",
+     "text": "Temperatur (Mitte oben) (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.temperature_center.default",
+     "text": "Temperatur (Mitte) (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.temperature_center_bottom.default",
+     "text": "Temperatur (Mitte unten) (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.temperature_bottom.default",
+     "text": "Temperatur (unten) (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.charge.default",
+     "text": "Puffer Füllgrad (Puffer)",
+     "unit": "%"
+    },
+    {
+     "id": "buffer.max_requirement.default",
+     "text": "Höchste Anforderung (Puffer)",
+     "unit": "°C"
+    },
+    {
+     "id": "buffer.pump_active.default",
+     "text": "Pufferpumpe aktiv (Puffer)",
+     "unit": null
+    }
+   ]
+  }
+ ],
+ "measurements": {
+  "heater.heater_temperature_current": 72.1,
+  "heater.heater_temperature_target": 0,
+  "heater.smoke_temperature": 67.1,
+  "heater.efficiency": 0,
+  "heater.heater_oxygen_is": 1.2,
+  "heater.heater_oxygen_target": 7.5,
+  "heater.heater_backflow_is": 71.6,
+  "heater.heater_backflow_target": 58,
+  "heater.max_power": 0,
+  "heater.system_pressure": 0,
+  "heater.outdoor_temperature": 7.7,
+  "heater.outdoor_temperature_average": 8,
+  "heating_circuit.flow_temperature_current.1": 46.4,
+  "heating_circuit.room_temperature_current.1": 20,
+  "heating_circuit.pump_active.1": 1,
+  "heating_circuit.flow_temperature_current.2": 46.4,
+  "heating_circuit.room_temperature_current.2": 20,
+  "heating_circuit.pump_active.2": 1,
+  "buffer.temperature_top.default": 75.5,
+  "buffer.temperature_center.default": 75.7,
+  "buffer.temperature_bottom.default": 66.4,
+  "buffer.charge.default": 100,
+  "buffer.max_requirement.default": 45.3,
+  "buffer.pump_active.default": 1,
+  "fresh_water.buffer_temperature_current.1": 30,
+  "fresh_water.flow_temperature_current.1": 75.5
+ }
+}

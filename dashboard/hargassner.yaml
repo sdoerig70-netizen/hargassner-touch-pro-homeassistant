@@ -1,0 +1,171 @@
+# Dashboard im Stil der Hargassner-App (Karte hargassner-anlage-card)
+title: Hargassner
+views:
+- title: Anlage
+  path: anlage
+  icon: mdi:fire
+  type: panel
+  cards:
+  - type: custom:hargassner-anlage-card
+    titel: Musteranlage
+    wetter:
+      titel: Wetter
+      zustand: sensor.musteranlage_zustand
+      temperatur: sensor.musteranlage_temperatur
+      niederschlag: sensor.musteranlage_niederschlag
+      bewoelkung: sensor.musteranlage_bewolkung
+      feuchte: sensor.musteranlage_luftfeuchtigkeit
+      wind: sensor.musteranlage_windgeschwindigkeit
+      luftdruck: sensor.musteranlage_luftdruck
+      sonnenaufgang: sensor.musteranlage_sonnenaufgang
+      sonnenuntergang: sensor.musteranlage_sonnenuntergang
+      prognose: sensor.musteranlage_prognose
+      tag: binary_sensor.musteranlage_tag
+    kessel:
+      titel: Kessel
+      name: Musteranlage
+      typ: sensor.musteranlage_kessel_kesseltyp
+      programm: select.musteranlage_kessel_pr001_kesselprogramm
+      zustand: sensor.musteranlage_kessel_zustand
+      leistung: sensor.musteranlage_kessel_leistung
+      temperatur: sensor.musteranlage_kessel_kesseltemperatur
+      solltemperatur: sensor.musteranlage_kessel_kessel_solltemperatur
+      abgas: sensor.musteranlage_kessel_abgastemperatur
+    puffer:
+      titel: Puffer
+      name: Puffer
+      kapazitaet: sensor.musteranlage_puffer_kapazitat
+      ladung: sensor.musteranlage_puffer_pufferladung
+      anforderung: sensor.musteranlage_puffer_hochste_anforderung
+      zustand: sensor.musteranlage_puffer_zustand
+      oben: sensor.musteranlage_puffer_puffertemperatur_oben
+      mitte: sensor.musteranlage_puffer_puffertemperatur_mitte
+      unten: sensor.musteranlage_puffer_puffertemperatur_unten
+      pumpe: binary_sensor.musteranlage_puffer_pumpe_aktiv
+    heizkreise:
+    - titel: Altbau
+      name: ''
+      nummer: 1
+      betriebsart: select.musteranlage_heizkreis_1_altbau_pr011_betriebsart
+      zustand: sensor.musteranlage_heizkreis_1_altbau_zustand
+      vorlauf: sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+      vorlauf_soll: sensor.musteranlage_heizkreis_1_altbau_vorlauf_solltemperatur
+      raum: sensor.musteranlage_messkanale_altbau_raumtemperatur_hk_1
+      raum_soll: sensor.musteranlage_heizkreis_1_altbau_raum_solltemperatur
+      aussen: sensor.musteranlage_heizkreis_1_altbau_aussentemperatur
+      aussen_gemittelt: sensor.musteranlage_heizkreis_1_altbau_aussentemperatur_gemittelt
+      witterung: select.musteranlage_heizkreis_1_altbau_a5b_witterungsfuhrung
+      steilheit: number.musteranlage_heizkreis_1_altbau_a2_steilheit
+      korrektur: number.musteranlage_heizkreis_1_altbau_a6d_raumtemperatur_korrektur
+      pumpe: binary_sensor.musteranlage_heizkreis_1_altbau_pumpe_aktiv
+      wochenuhr: sensor.musteranlage_heizkreis_1_altbau_3a_wochenuhr
+      wasserzeichen: ''
+    - titel: Neubau
+      name: ''
+      nummer: 2
+      betriebsart: select.musteranlage_heizkreis_2_neubau_pr012_betriebsart
+      zustand: sensor.musteranlage_heizkreis_2_neubau_zustand
+      vorlauf: sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur
+      vorlauf_soll: sensor.musteranlage_heizkreis_2_neubau_vorlauf_solltemperatur
+      raum: sensor.musteranlage_messkanale_neubau_raumtemperatur_hk_2
+      raum_soll: sensor.musteranlage_heizkreis_2_neubau_raum_solltemperatur
+      aussen: sensor.musteranlage_heizkreis_2_neubau_aussentemperatur
+      aussen_gemittelt: sensor.musteranlage_heizkreis_2_neubau_aussentemperatur_gemittelt
+      witterung: select.musteranlage_heizkreis_2_neubau_a15b_witterungsfuhrung
+      steilheit: number.musteranlage_heizkreis_2_neubau_a12_steilheit
+      korrektur: number.musteranlage_heizkreis_2_neubau_a16d_raumtemperatur_korrektur
+      pumpe: binary_sensor.musteranlage_heizkreis_2_neubau_pumpe_aktiv
+      wochenuhr: sensor.musteranlage_heizkreis_2_neubau_6a_wochenuhr
+      wasserzeichen: ''
+    frischwasser:
+    - titel: Frischwasser Station 1
+      name: Neubau
+      auslauf_soll: sensor.musteranlage_frischwasserstation_1_neubau_auslauf_solltemperatur
+      vorlauf: sensor.musteranlage_frischwasserstation_1_neubau_vorlauftemperatur
+      fuehler: sensor.musteranlage_messkanale_neubau_fws_fuhler_fws_1
+      durchfluss: sensor.musteranlage_frischwasserstation_1_neubau_durchfluss
+      heute: sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_heute
+      gesamt: sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_gesamt
+      pumpe: binary_sensor.musteranlage_frischwasserstation_1_neubau_pumpe_aktiv
+    listen:
+    - titel: Kessel-Details
+      zeilen:
+      - name: Rücklauftemperatur
+        entity: sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_ist
+        soll: sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_soll
+      - name: Restsauerstoff
+        entity: sensor.musteranlage_messkanale_kessel_sauerstoffgehalt_ist
+        soll: sensor.musteranlage_messkanale_kessel_sauerstoffgehalt_soll
+      - name: Höchste Anforderung
+        entity: sensor.musteranlage_messkanale_kessel_hochste_anforderung
+        stellen: 0
+      - name: Aussentemperatur gemittelt
+        entity: sensor.musteranlage_kessel_aussentemperatur_gemittelt
+      - name: Systemdruck
+        entity: sensor.musteranlage_messkanale_kessel_systemdruck
+      - name: Lagerstand
+        entity: sensor.musteranlage_messkanale_kessel_lagerstand
+        stellen: 0
+      - name: Alle Häuser aus über
+        entity: number.musteranlage_heizkreis_1_altbau_11_alle_heizkreise_aus_uber_aussentemperatur
+        stellen: 0
+    signale:
+      titel: Signale
+      zeilen:
+      - name: Cloud-Verbindung
+        entity: binary_sensor.musteranlage_cloud_verbindung
+        an: Online
+        aus: Offline
+      - name: Ereignis vorhanden
+        entity: sensor.musteranlage_messkanale_kessel_storung
+        art: warnung
+        an: Ja
+        aus: Nein
+      - name: Abgasüberwachung
+        entity: binary_sensor.musteranlage_kessel_abgasuberwachung
+        art: fehler
+        an: Ausgelöst
+        aus: In Ordnung
+      - name: Pufferpumpe
+        entity: binary_sensor.musteranlage_puffer_pumpe_aktiv
+      - name: Zwangsladung
+        entity: binary_sensor.musteranlage_puffer_zwangsladung_aktiv
+        art: warnung
+      - name: Pumpe Altbau
+        entity: binary_sensor.musteranlage_heizkreis_1_altbau_pumpe_aktiv
+      - name: Altbau aktiv
+        entity: binary_sensor.musteranlage_heizkreis_1_altbau_aktiv
+      - name: Pumpe Neubau
+        entity: binary_sensor.musteranlage_heizkreis_2_neubau_pumpe_aktiv
+      - name: Neubau aktiv
+        entity: binary_sensor.musteranlage_heizkreis_2_neubau_aktiv
+      - name: Pumpe FWS
+        entity: binary_sensor.musteranlage_frischwasserstation_1_neubau_pumpe_aktiv
+      - name: Tag
+        entity: binary_sensor.musteranlage_tag
+        an: Tag
+        aus: Nacht
+    heizkurve:
+      titel: Heizkurve
+      aussen: sensor.musteranlage_kessel_aussentemperatur_gemittelt
+      aussen_aktuell: sensor.musteranlage_kessel_aussentemperatur
+      prognose: sensor.musteranlage_prognose
+      abschaltgrenze: number.musteranlage_heizkreis_1_altbau_11_alle_heizkreise_aus_uber_aussentemperatur
+      tage: 7
+      heizkreise:
+      - name: Altbau
+        farbe: '#e8743b'
+        steilheit: number.musteranlage_heizkreis_1_altbau_a2_steilheit
+        tagestemperatur: number.musteranlage_heizkreis_1_altbau_4_tages_raumtemperatur
+        absenktemperatur: number.musteranlage_heizkreis_1_altbau_5_absenk_raumtemperatur
+        witterung: select.musteranlage_heizkreis_1_altbau_a5b_witterungsfuhrung
+        vorlauf_soll: sensor.musteranlage_heizkreis_1_altbau_vorlauf_solltemperatur
+        vorlauf_ist: sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+      - name: Neubau
+        farbe: '#3b8ee8'
+        steilheit: number.musteranlage_heizkreis_2_neubau_a12_steilheit
+        tagestemperatur: number.musteranlage_heizkreis_2_neubau_7_tages_raumtemperatur
+        absenktemperatur: number.musteranlage_heizkreis_2_neubau_8_absenk_raumtemperatur
+        witterung: select.musteranlage_heizkreis_2_neubau_a15b_witterungsfuhrung
+        vorlauf_soll: sensor.musteranlage_heizkreis_2_neubau_vorlauf_solltemperatur
+        vorlauf_ist: sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur

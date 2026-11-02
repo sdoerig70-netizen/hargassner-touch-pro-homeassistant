@@ -1,0 +1,20 @@
+{
+  "domain": "hargassner_touch_pro",
+  "name": "Hargassner Touch Pro",
+  "after_dependencies": [
+    "diagnostics",
+    "frontend"
+  ],
+  "codeowners": [
+    "@sdoerig70-netizen"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/sdoerig70-netizen/hargassner-touch-pro-homeassistant",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/sdoerig70-netizen/hargassner-touch-pro-homeassistant/issues",
+  "requirements": [],
+  "version": "1.5.0"
+}

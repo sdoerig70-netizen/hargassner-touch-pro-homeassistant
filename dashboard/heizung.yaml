@@ -1,0 +1,521 @@
+title: Heizung
+views:
+- title: Übersicht
+  path: uebersicht
+  icon: mdi:fire
+  type: sections
+  max_columns: 4
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Kessel
+      icon: mdi:fire
+    - type: gauge
+      entity: sensor.musteranlage_kessel_kesseltemperatur
+      name: Kesseltemperatur
+      min: 0
+      max: 100
+      needle: true
+      segments:
+      - from: 0
+        color: '#4fa3e0'
+      - from: 55
+        color: '#f0a030'
+      - from: 65
+        color: '#43a047'
+      - from: 92
+        color: '#e53935'
+    - type: tile
+      entity: sensor.musteranlage_kessel_zustand
+      name: Zustand
+    - type: tile
+      entity: sensor.musteranlage_kessel_leistung
+      name: Leistung
+      icon: mdi:gauge
+    - type: tile
+      entity: sensor.musteranlage_kessel_abgastemperatur
+      name: Abgas
+      icon: mdi:smoke
+    - type: tile
+      entity: sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_ist
+      name: Rücklauf
+      icon: mdi:thermometer-chevron-down
+    - type: tile
+      entity: sensor.musteranlage_messkanale_kessel_sauerstoffgehalt_ist
+      name: Restsauerstoff
+      icon: mdi:molecule
+    - type: tile
+      entity: sensor.musteranlage_kessel_aussentemperatur
+      name: Aussen
+      icon: mdi:sun-thermometer-outline
+    - type: tile
+      entity: select.musteranlage_kessel_pr001_kesselprogramm
+      name: PR001 Kesselprogramm
+      features:
+      - type: select-options
+      features_position: bottom
+    - type: tile
+      entity: binary_sensor.musteranlage_cloud_verbindung
+      name: Cloud
+      icon: mdi:cloud-check
+  - type: grid
+    cards:
+    - type: heading
+      heading: Puffer
+      icon: mdi:storage-tank
+    - type: gauge
+      entity: sensor.musteranlage_puffer_pufferladung
+      name: Pufferladung
+      min: 0
+      max: 100
+      needle: true
+      segments:
+      - from: 0
+        color: '#e53935'
+      - from: 20
+        color: '#f0a030'
+      - from: 45
+        color: '#43a047'
+    - type: tile
+      entity: sensor.musteranlage_puffer_puffertemperatur_oben
+      name: Oben
+      icon: mdi:thermometer-high
+    - type: tile
+      entity: sensor.musteranlage_puffer_puffertemperatur_mitte
+      name: Mitte
+      icon: mdi:thermometer
+    - type: tile
+      entity: sensor.musteranlage_puffer_puffertemperatur_unten
+      name: Unten
+      icon: mdi:thermometer-low
+    - type: tile
+      entity: sensor.musteranlage_puffer_zustand
+      name: Zustand
+    - type: tile
+      entity: binary_sensor.musteranlage_puffer_pumpe_aktiv
+      name: Pumpe
+      icon: mdi:pump
+    - type: tile
+      entity: sensor.musteranlage_puffer_hochste_anforderung
+      name: Höchste Anforderung
+  - type: grid
+    cards:
+    - type: heading
+      heading: Heizkreis 1 (Altbau)
+      icon: mdi:radiator
+    - type: thermostat
+      entity: climate.musteranlage_heizkreis_1_altbau
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - auto
+        - heat
+        - 'off'
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_1_altbau_zustand
+      name: Zustand
+    - type: tile
+      entity: binary_sensor.musteranlage_heizkreis_1_altbau_pumpe_aktiv
+      name: Pumpe
+      icon: mdi:pump
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+      name: Vorlauf
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_1_altbau_vorlauf_solltemperatur
+      name: Vorlauf Soll
+    - type: tile
+      entity: select.musteranlage_heizkreis_1_altbau_pr011_betriebsart
+      name: Betriebsart
+      features:
+      - type: select-options
+      features_position: bottom
+    - type: tile
+      entity: number.musteranlage_heizkreis_1_altbau_4_tages_raumtemperatur
+      name: 4 Tages-Raumtemperatur
+      features:
+      - type: numeric-input
+        style: buttons
+      features_position: inline
+    - type: tile
+      entity: number.musteranlage_heizkreis_1_altbau_5_absenk_raumtemperatur
+      name: 5 Absenk-Raumtemperatur
+      features:
+      - type: numeric-input
+        style: buttons
+      features_position: inline
+  - type: grid
+    cards:
+    - type: heading
+      heading: Heizkreis 2 (Neubau)
+      icon: mdi:radiator
+    - type: thermostat
+      entity: climate.musteranlage_heizkreis_2_neubau
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - auto
+        - heat
+        - 'off'
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_2_neubau_zustand
+      name: Zustand
+    - type: tile
+      entity: binary_sensor.musteranlage_heizkreis_2_neubau_pumpe_aktiv
+      name: Pumpe
+      icon: mdi:pump
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur
+      name: Vorlauf
+    - type: tile
+      entity: sensor.musteranlage_heizkreis_2_neubau_vorlauf_solltemperatur
+      name: Vorlauf Soll
+    - type: tile
+      entity: select.musteranlage_heizkreis_2_neubau_pr012_betriebsart
+      name: Betriebsart
+      features:
+      - type: select-options
+      features_position: bottom
+    - type: tile
+      entity: number.musteranlage_heizkreis_2_neubau_7_tages_raumtemperatur
+      name: 7 Tages-Raumtemperatur
+      features:
+      - type: numeric-input
+        style: buttons
+      features_position: inline
+    - type: tile
+      entity: number.musteranlage_heizkreis_2_neubau_8_absenk_raumtemperatur
+      name: 8 Absenk-Raumtemperatur
+      features:
+      - type: numeric-input
+        style: buttons
+      features_position: inline
+  - type: grid
+    cards:
+    - type: heading
+      heading: Frischwasserstation (Neubau)
+      icon: mdi:water-boiler
+    - type: tile
+      entity: sensor.musteranlage_frischwasserstation_1_neubau_auslauf_solltemperatur
+      name: Auslauf Soll
+    - type: tile
+      entity: sensor.musteranlage_frischwasserstation_1_neubau_vorlauftemperatur
+      name: Vorlauf
+    - type: tile
+      entity: sensor.musteranlage_messkanale_neubau_fws_fuhler_fws_1
+      name: FWS-Fühler
+      icon: mdi:thermometer-water
+    - type: tile
+      entity: binary_sensor.musteranlage_frischwasserstation_1_neubau_pumpe_aktiv
+      name: Pumpe
+      icon: mdi:pump
+    - type: tile
+      entity: sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_heute
+      name: Zapfmenge heute
+      icon: mdi:water
+    - type: tile
+      entity: sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_gesamt
+      name: Zapfmenge gesamt
+      icon: mdi:water-plus
+  - type: grid
+    cards:
+    - type: heading
+      heading: Wetter (Oberaach)
+      icon: mdi:weather-partly-cloudy
+    - type: tile
+      entity: sensor.musteranlage_temperatur
+      name: Temperatur
+    - type: tile
+      entity: sensor.musteranlage_zustand
+      name: Wetter
+      icon: mdi:weather-cloudy
+    - type: tile
+      entity: sensor.musteranlage_luftfeuchtigkeit
+      name: Feuchte
+    - type: tile
+      entity: sensor.musteranlage_windgeschwindigkeit
+      name: Wind
+  - type: grid
+    column_span: 4
+    cards:
+    - type: heading
+      heading: Verlauf 24 Stunden
+      icon: mdi:chart-line
+    - type: history-graph
+      title: Kessel
+      hours_to_show: 24
+      entities:
+      - sensor.musteranlage_kessel_kesseltemperatur
+      - sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_ist
+      - sensor.musteranlage_kessel_abgastemperatur
+    - type: history-graph
+      title: Puffer
+      hours_to_show: 24
+      entities:
+      - sensor.musteranlage_puffer_puffertemperatur_oben
+      - sensor.musteranlage_puffer_puffertemperatur_mitte
+      - sensor.musteranlage_puffer_puffertemperatur_unten
+    - type: history-graph
+      title: Vorlauf Heizkreise
+      hours_to_show: 24
+      entities:
+      - sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur
+      - sensor.musteranlage_kessel_aussentemperatur
+    - type: history-graph
+      title: Kesselzustand
+      hours_to_show: 24
+      entities:
+      - sensor.musteranlage_kessel_zustand
+- title: Heizkurve
+  path: heizkurve
+  icon: mdi:chart-bell-curve-cumulative
+  type: panel
+  cards:
+  - type: custom:hargassner-heizkurve-card
+    titel: Heizkurve
+    aussen: sensor.musteranlage_kessel_aussentemperatur_gemittelt
+    aussen_aktuell: sensor.musteranlage_kessel_aussentemperatur
+    prognose: sensor.musteranlage_prognose
+    abschaltgrenze: number.musteranlage_heizkreis_1_altbau_11_alle_heizkreise_aus_uber_aussentemperatur
+    tage: 7
+    heizkreise:
+    - name: Heizkreis 1 (Altbau)
+      farbe: '#e8743b'
+      steilheit: number.musteranlage_heizkreis_1_altbau_a2_steilheit
+      tagestemperatur: number.musteranlage_heizkreis_1_altbau_4_tages_raumtemperatur
+      absenktemperatur: number.musteranlage_heizkreis_1_altbau_5_absenk_raumtemperatur
+      witterung: select.musteranlage_heizkreis_1_altbau_a5b_witterungsfuhrung
+      vorlauf_soll: sensor.musteranlage_heizkreis_1_altbau_vorlauf_solltemperatur
+      vorlauf_ist: sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+    - name: Heizkreis 2 (Neubau)
+      farbe: '#3b8ee8'
+      steilheit: number.musteranlage_heizkreis_2_neubau_a12_steilheit
+      tagestemperatur: number.musteranlage_heizkreis_2_neubau_7_tages_raumtemperatur
+      absenktemperatur: number.musteranlage_heizkreis_2_neubau_8_absenk_raumtemperatur
+      witterung: select.musteranlage_heizkreis_2_neubau_a15b_witterungsfuhrung
+      vorlauf_soll: sensor.musteranlage_heizkreis_2_neubau_vorlauf_solltemperatur
+      vorlauf_ist: sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur
+- title: Einstellungen
+  path: einstellungen
+  icon: mdi:tune-variant
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    column_span: 3
+    cards:
+    - type: heading
+      heading: Einstellungen
+      icon: mdi:tune-variant
+    - type: markdown
+      content: Änderungen gehen direkt an den Kessel. Die Werte kommen aus der Hargassner-Cloud und werden nach dem Setzen neu geladen (bis zu einer Minute).
+  - type: grid
+    cards:
+    - type: entities
+      title: Kessel und alle Heizkreise
+      state_color: true
+      entities:
+      - select.musteranlage_kessel_pr001_kesselprogramm
+      - number.musteranlage_heizkreis_1_altbau_11_alle_heizkreise_aus_uber_aussentemperatur
+      - number.musteranlage_heizkreis_1_altbau_12_alle_heizkreise_aus_bei_tagabsenkung
+      - number.musteranlage_heizkreis_1_altbau_13_alle_heizkreise_aus_bei_nachtabsenkung
+  - type: grid
+    cards:
+    - type: entities
+      title: Heizkreis 1 (Altbau)
+      state_color: true
+      entities:
+      - select.musteranlage_heizkreis_1_altbau_pr011_betriebsart
+      - number.musteranlage_heizkreis_1_altbau_4_tages_raumtemperatur
+      - number.musteranlage_heizkreis_1_altbau_5_absenk_raumtemperatur
+      - number.musteranlage_heizkreis_1_altbau_a2_steilheit
+      - select.musteranlage_heizkreis_1_altbau_a5b_witterungsfuhrung
+      - number.musteranlage_heizkreis_1_altbau_a6d_raumtemperatur_korrektur
+      - select.musteranlage_heizkreis_1_altbau_a8_sommer_badheizen
+      - sensor.musteranlage_heizkreis_1_altbau_3a_wochenuhr
+      - sensor.musteranlage_heizkreis_1_altbau_urlaubsprogramm
+      - text.musteranlage_heizkreis_1_altbau_a1a_bezeichnung
+  - type: grid
+    cards:
+    - type: entities
+      title: Heizkreis 2 (Neubau)
+      state_color: true
+      entities:
+      - select.musteranlage_heizkreis_2_neubau_pr012_betriebsart
+      - number.musteranlage_heizkreis_2_neubau_7_tages_raumtemperatur
+      - number.musteranlage_heizkreis_2_neubau_8_absenk_raumtemperatur
+      - number.musteranlage_heizkreis_2_neubau_a12_steilheit
+      - select.musteranlage_heizkreis_2_neubau_a15b_witterungsfuhrung
+      - number.musteranlage_heizkreis_2_neubau_a16d_raumtemperatur_korrektur
+      - select.musteranlage_heizkreis_2_neubau_a18_sommer_badheizen
+      - sensor.musteranlage_heizkreis_2_neubau_6a_wochenuhr
+      - sensor.musteranlage_heizkreis_2_neubau_urlaubsprogramm
+      - text.musteranlage_heizkreis_2_neubau_a11a_bezeichnung
+  - type: grid
+    cards:
+    - type: entities
+      title: Bezeichnungen
+      state_color: true
+      entities:
+      - text.musteranlage_puffer_c2aa_bezeichnung
+      - text.musteranlage_frischwasserstation_1_neubau_b106a_bezeichnung
+- title: Alle Werte
+  path: werte
+  icon: mdi:format-list-bulleted
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: entities
+      title: Kessel
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_kessel_abgasuberwachung
+      - sensor.musteranlage_kessel_abgastemperatur
+      - sensor.musteranlage_kessel_aussentemperatur
+      - sensor.musteranlage_kessel_aussentemperatur_gemittelt
+      - sensor.musteranlage_kessel_kessel_solltemperatur
+      - sensor.musteranlage_kessel_kesseltemperatur
+      - sensor.musteranlage_kessel_kesseltyp
+      - sensor.musteranlage_kessel_leistung
+      - sensor.musteranlage_kessel_zustand
+      - binary_sensor.musteranlage_cloud_verbindung
+  - type: grid
+    cards:
+    - type: entities
+      title: Puffer
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_puffer_pumpe_aktiv
+      - sensor.musteranlage_puffer_hochste_anforderung
+      - sensor.musteranlage_puffer_kapazitat
+      - sensor.musteranlage_puffer_pufferladung
+      - sensor.musteranlage_puffer_puffertemperatur_mitte
+      - sensor.musteranlage_puffer_puffertemperatur_oben
+      - sensor.musteranlage_puffer_puffertemperatur_unten
+      - sensor.musteranlage_puffer_zustand
+  - type: grid
+    cards:
+    - type: entities
+      title: Heizkreis 1 (Altbau)
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_heizkreis_1_altbau_aktiv
+      - binary_sensor.musteranlage_heizkreis_1_altbau_pumpe_aktiv
+      - sensor.musteranlage_heizkreis_1_altbau_3a_wochenuhr
+      - sensor.musteranlage_heizkreis_1_altbau_aussentemperatur
+      - sensor.musteranlage_heizkreis_1_altbau_aussentemperatur_gemittelt
+      - sensor.musteranlage_heizkreis_1_altbau_raum_solltemperatur
+      - sensor.musteranlage_heizkreis_1_altbau_raumtemperatur
+      - sensor.musteranlage_heizkreis_1_altbau_urlaubsprogramm
+      - sensor.musteranlage_heizkreis_1_altbau_vorlauf_solltemperatur
+      - sensor.musteranlage_heizkreis_1_altbau_vorlauftemperatur
+      - sensor.musteranlage_heizkreis_1_altbau_zustand
+  - type: grid
+    cards:
+    - type: entities
+      title: Heizkreis 2 (Neubau)
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_heizkreis_2_neubau_aktiv
+      - binary_sensor.musteranlage_heizkreis_2_neubau_pumpe_aktiv
+      - sensor.musteranlage_heizkreis_2_neubau_6a_wochenuhr
+      - sensor.musteranlage_heizkreis_2_neubau_aussentemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_aussentemperatur_gemittelt
+      - sensor.musteranlage_heizkreis_2_neubau_raum_solltemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_raumtemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_urlaubsprogramm
+      - sensor.musteranlage_heizkreis_2_neubau_vorlauf_solltemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_vorlauftemperatur
+      - sensor.musteranlage_heizkreis_2_neubau_zustand
+  - type: grid
+    cards:
+    - type: entities
+      title: Frischwasserstation (Neubau)
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_frischwasserstation_1_neubau_pumpe_aktiv
+      - sensor.musteranlage_frischwasserstation_1_neubau_auslauf_solltemperatur
+      - sensor.musteranlage_frischwasserstation_1_neubau_durchfluss
+      - sensor.musteranlage_frischwasserstation_1_neubau_vorlauftemperatur
+      - sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_gesamt
+      - sensor.musteranlage_frischwasserstation_1_neubau_zapfmenge_heute
+  - type: grid
+    cards:
+    - type: entities
+      title: Wetter (Oberaach)
+      state_color: true
+      entities:
+      - binary_sensor.musteranlage_tag
+      - sensor.musteranlage_bewolkung
+      - sensor.musteranlage_luftdruck
+      - sensor.musteranlage_luftfeuchtigkeit
+      - sensor.musteranlage_niederschlag
+      - sensor.musteranlage_sonnenaufgang
+      - sensor.musteranlage_sonnenuntergang
+      - sensor.musteranlage_temperatur
+      - sensor.musteranlage_windgeschwindigkeit
+      - sensor.musteranlage_windrichtung
+      - sensor.musteranlage_zustand
+- title: Messkanäle
+  path: messkanaele
+  icon: mdi:chart-multiple
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: entities
+      title: Kessel
+      state_color: true
+      entities:
+      - sensor.musteranlage_messkanale_kessel_aussentemperatur
+      - sensor.musteranlage_messkanale_kessel_aussentemperatur_gemittelt
+      - sensor.musteranlage_messkanale_kessel_hochste_anforderung
+      - sensor.musteranlage_messkanale_kessel_lagerstand
+      - sensor.musteranlage_messkanale_kessel_leistung
+      - sensor.musteranlage_messkanale_kessel_rauchgastemperatur
+      - sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_ist
+      - sensor.musteranlage_messkanale_kessel_rucklauf_temperatur_soll
+      - sensor.musteranlage_messkanale_kessel_sauerstoffgehalt_ist
+      - sensor.musteranlage_messkanale_kessel_sauerstoffgehalt_soll
+      - sensor.musteranlage_messkanale_kessel_storung
+      - sensor.musteranlage_messkanale_kessel_systemdruck
+      - sensor.musteranlage_messkanale_kessel_temperatur_ist
+      - sensor.musteranlage_messkanale_kessel_temperatur_soll
+      - sensor.musteranlage_messkanale_lagerstand_kombi_pk
+      - sensor.musteranlage_messkanale_leistung_kombi_pk
+      - sensor.musteranlage_messkanale_temperatur_kombi_pk
+  - type: grid
+    cards:
+    - type: entities
+      title: Puffer
+      state_color: true
+      entities:
+      - sensor.musteranlage_messkanale_hochste_anforderung_puffer
+      - sensor.musteranlage_messkanale_puffer_fullgrad_puffer
+      - sensor.musteranlage_messkanale_pufferpumpe_aktiv_puffer
+      - sensor.musteranlage_messkanale_temperatur_mitte_oben_puffer
+      - sensor.musteranlage_messkanale_temperatur_mitte_puffer
+      - sensor.musteranlage_messkanale_temperatur_mitte_unten_puffer
+      - sensor.musteranlage_messkanale_temperatur_oben_puffer
+      - sensor.musteranlage_messkanale_temperatur_unten_puffer
+  - type: grid
+    cards:
+    - type: entities
+      title: Heizkreise und FWS
+      state_color: true
+      entities:
+      - sensor.musteranlage_messkanale_neubau_fws_fuhler_fws_1
+      - sensor.musteranlage_messkanale_neubau_fws_vorlauf_fws_1
+      - sensor.musteranlage_messkanale_neubau_luftfeuchte_hk_2
+      - sensor.musteranlage_messkanale_neubau_pumpe_aktiv_hk_2
+      - sensor.musteranlage_messkanale_neubau_raumtemperatur_hk_2
+      - sensor.musteranlage_messkanale_neubau_temperatur_vorlauf_hk_2
+      - sensor.musteranlage_messkanale_altbau_luftfeuchte_hk_1
+      - sensor.musteranlage_messkanale_altbau_pumpe_aktiv_hk_1
+      - sensor.musteranlage_messkanale_altbau_raumtemperatur_hk_1
+      - sensor.musteranlage_messkanale_altbau_temperatur_vorlauf_hk_1
