@@ -21,6 +21,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator: HargassnerCoordinator = hass.data[DOMAIN][entry.entry_id]
+    rechner = hass.data[DOMAIN].get(f"_verbrauch_{entry.entry_id}")
+    if rechner:
+        from . import verbrauch
+
+        async_add_entities(verbrauch.knoepfe(rechner))
     if not entry.options.get(CONF_WRITABLE, DEFAULT_WRITABLE):
         return
     bekannt: set[str] = set()

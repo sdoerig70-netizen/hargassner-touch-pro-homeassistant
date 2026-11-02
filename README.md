@@ -109,6 +109,15 @@ Die Karte `custom:hargassner-schema-card` zeigt die Heizung als einfaches Schema
 
 Darunter wird pro Haus mit grossen Knöpfen bedient: Wohlfühl- und Spartemperatur mit + und −, Betrieb «Nach Zeitplan», «Immer warm», «Sparbetrieb», «Aus», «Jetzt warm», «Jetzt sparen» und der Zeitplan. Das Ausschalten eines Hauses und jede Änderung am Kessel fragen vorher nach. «Für Fachleute» öffnet die vollständige Anlagen-Karte. Konfiguration wie bei der Anlagen-Karte unter `anlage:`, dazu optional `ruecklauf`, `ladepumpe`, `lagerstand` und `cloud`. Vorlage: `dashboard/heizung-einfach.yaml`.
 
+## Hackgut und Wartung
+
+Die Integration rechnet aus der Kesselleistung (Leistung in % × Nennleistung) laufend die abgegebene Wärme hoch und schätzt daraus:
+
+- **Hackgut im Lager:** Restmenge in Schüttraummetern, Reichweite in Tagen und das voraussichtliche Datum, an dem das Lager leer ist. Nach einer Lieferung den Dienst `hargassner_touch_pro.lager_gefuellt` (Menge, optional Datum) aufrufen oder den Knopf «Lager aufgefüllt» drücken.
+- **Aschebox und Reinigung:** geschätzter Füllstand, Tage bis zur nächsten Wartung und Datum. Fällig ist die Wartung, wenn die Box rechnerisch voll ist, spätestens aber nach der eingestellten Anzahl Tage. Nach dem Leeren `hargassner_touch_pro.asche_geleert` aufrufen; mit dem tatsächlichen Füllstand (`fuellstand` in %) lernt der Rechner einen Korrekturfaktor.
+
+Die Annahmen sind als Einstellungs-Entitäten änderbar: Nennleistung (aus dem Kesseltyp erkannt), Wirkungsgrad (90 %), Heizwert (745 kWh/Srm, Fichte W30), Schüttdichte (216 kg/Srm), Aschegehalt (1 %), Dichte der Asche in der Box (0,6 kg/l), Grösse der Aschebox (30 l) und Wartung spätestens nach (14 Tagen). Als Tagesverbrauch dient das Mittel der letzten Tage; beim ersten Start werden die Stundenwerte der Kesselleistung aus der Home-Assistant-Statistik übernommen. Die Schema-Karte zeigt die Werte unter `verbrauch:` an (siehe `dashboard/heizung-einfach.yaml`).
+
 ## 3D-Ansicht
 
 Die Karte `custom:hargassner-anlage-3d-card` zeigt Heizraum und Lager als 3D-Modell. Rohre und Puffer sind nach Temperatur eingefärbt, die Strömung läuft, wenn die zuständige Pumpe aktiv ist, Flamme, Rührwerk und Rauch folgen der Kesselleistung. Ein Klick auf ein Bauteil zeigt Werte und Bedienung; Trends, Parameter, Zeitprogramm und Heizkurve öffnen die bestehenden Karten.

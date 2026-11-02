@@ -94,6 +94,42 @@
           "description": "List of days (MO–SU) and up to two time windows per entry, e.g. \"T06:00PT2H\" for 06:00–08:00."
         }
       }
+    },
+    "lager_gefuellt": {
+      "name": "Fuel store filled",
+      "description": "Records that the wood chip store was filled.",
+      "fields": {
+        "menge": {
+          "name": "Amount",
+          "description": "Loose cubic metres"
+        },
+        "datum": {
+          "name": "Date",
+          "description": "When it was filled"
+        },
+        "bereits_verbraucht": {
+          "name": "Already used",
+          "description": "Srm, optional"
+        },
+        "anlage": {
+          "name": "Installation",
+          "description": ""
+        }
+      }
+    },
+    "asche_geleert": {
+      "name": "Ash box emptied",
+      "description": "Records that the ash box was emptied.",
+      "fields": {
+        "fuellstand": {
+          "name": "Fill level before emptying",
+          "description": "%"
+        },
+        "anlage": {
+          "name": "Installation",
+          "description": ""
+        }
+      }
     }
   }
 }

@@ -78,6 +78,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator: HargassnerCoordinator = hass.data[DOMAIN][entry.entry_id]
+    rechner = hass.data[DOMAIN].get(f"_verbrauch_{entry.entry_id}")
+    if rechner:
+        from . import verbrauch
+
+        async_add_entities(verbrauch.sensoren(rechner))
     bekannt: set[str] = set()
 
     plattform = entity_platform.async_get_current_platform()

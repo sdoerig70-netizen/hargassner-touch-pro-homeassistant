@@ -175,3 +175,14 @@ views:
     lagerstand: sensor.musteranlage_messkanale_kessel_lagerstand
     ladepumpe: sensor.musteranlage_messkanale_pufferpumpe_aktiv_puffer
     cloud: binary_sensor.musteranlage_cloud_verbindung
+    verbrauch:
+      lager_rest: sensor.musteranlage_hackgut_im_lager
+      lager_reichweite: sensor.musteranlage_hackgut_reicht_noch
+      lager_leer_am: sensor.musteranlage_hackgut_leer_am
+      lager_menge: number.musteranlage_lager_zuletzt_gefullt_mit
+      asche_fuellstand: sensor.musteranlage_aschebox_fullstand
+      wartung_tage: sensor.musteranlage_wartung_fallig_in
+      wartung_am: sensor.musteranlage_wartung_fallig_am
+      asche_geleert_am: sensor.musteranlage_aschebox_zuletzt_geleert
+      wartung_max: number.musteranlage_wartung_spatestens_nach
+      asche_geleert: button.musteranlage_aschebox_geleert

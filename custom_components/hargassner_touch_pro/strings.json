@@ -94,6 +94,42 @@
           "description": "Liste mit Tagen (MO–SU) und bis zu zwei Zeitfenstern je Eintrag, z. B. «T06:00PT2H» für 06:00–08:00."
         }
       }
+    },
+    "lager_gefuellt": {
+      "name": "Lager gefüllt",
+      "description": "Hält fest, dass das Hackgutlager gefüllt wurde.",
+      "fields": {
+        "menge": {
+          "name": "Menge",
+          "description": "Schüttraummeter (Srm)"
+        },
+        "datum": {
+          "name": "Datum",
+          "description": "Wann gefüllt wurde"
+        },
+        "bereits_verbraucht": {
+          "name": "Bereits verbraucht",
+          "description": "Srm, optional"
+        },
+        "anlage": {
+          "name": "Anlage",
+          "description": ""
+        }
+      }
+    },
+    "asche_geleert": {
+      "name": "Aschebox geleert",
+      "description": "Hält die Leerung fest.",
+      "fields": {
+        "fuellstand": {
+          "name": "Füllstand vor dem Leeren",
+          "description": "%"
+        },
+        "anlage": {
+          "name": "Anlage",
+          "description": ""
+        }
+      }
     }
   }
 }

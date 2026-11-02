@@ -133,6 +133,7 @@ const STIL = `
 .bestaetigen button { border:0; border-radius:8px; padding:10px 16px; font:inherit; cursor:pointer; }
 .bestaetigen .ja { background:#2b7bd6; color:#fff; font-weight:600; }
 .bestaetigen .nein { background:#eef0f3; }
+.rund-breit { border:0; border-radius:10px; padding:12px 14px; font:inherit; font-size:15px; font-weight:600; background:#16a34a; color:#fff; cursor:pointer; }
 @media (max-width: 600px) { .ueber { padding:0; } .kopf h1 { font-size:19px; } }
 `;
 
@@ -192,9 +193,28 @@ class HargassnerSchemaCard extends HTMLElement {
     const z = this._z(id);
     return z === null ? "–" : komma(z, st) + " °C";
   }
+  get _v() {
+    return this._config.verbrauch || {};
+  }
+  _attr(id) {
+    return this._s(id)?.attributes || {};
+  }
+  _datumText(id) {
+    const r = this._roh(id);
+    if (!r) return null;
+    const d = new Date(r + "T12:00:00");
+    return isNaN(d) ? null : d.toLocaleDateString("de-CH", { weekday: "short", day: "numeric", month: "long" });
+  }
+  _tageText(t) {
+    if (t === null || t === undefined) return "–";
+    if (t < 1) return "heute";
+    if (t < 1.5) return "morgen";
+    return `in ca. ${Math.round(t)} Tagen`;
+  }
+
   _fokusIntern() {
     const a = this.shadowRoot.activeElement;
-    return a && a.tagName === "SELECT";
+    return !!this._frage || (a && (a.tagName === "SELECT" || a.tagName === "INPUT"));
   }
 
   _signatur() {
@@ -227,6 +247,10 @@ class HargassnerSchemaCard extends HTMLElement {
       if (s.art === "warnung" && this._an(s.entity)) return { art: "warn", icon: "mdi:alert", text: `Hinweis: ${s.name}`, klein: "Die Heizung läuft weiter. Bei Unsicherheit die Fachperson fragen." };
     }
     const speicher = ladung === null ? "" : ` Der Wärmespeicher ist zu ${Math.round(ladung)} % gefüllt.`;
+    const wartung = this._z(this._v.wartung_tage);
+    if (wartung !== null && wartung < 1) return { art: "warn", icon: "mdi:wrench-clock", text: "Bitte jetzt die Aschebox leeren und den Kessel reinigen.", klein: "Danach unten bei «Wartung» auf «Erledigt» tippen." };
+    const lagerTage = this._z(this._v.lager_reichweite);
+    if (lagerTage !== null && lagerTage < 10) return { art: "warn", icon: "mdi:warehouse", text: `Die Holzschnitzel reichen nur noch ${this._tageText(lagerTage).replace("in ca. ", "ca. ")}.`, klein: "Bitte rechtzeitig neue Schnitzel bestellen." };
     if (programm === "Aus") return { art: "warn", icon: "mdi:power", text: "Der Holzkessel ist ausgeschaltet.", klein: "Häuser und Warmwasser bekommen nur noch Wärme, solange der Speicher warm ist." + speicher };
     if (programm === "Feuerung stoppen") return { art: "warn", icon: "mdi:fire-off", text: "Das Feuer im Holzkessel wird gestoppt.", klein: "Danach heizt der Kessel nicht mehr, bis wieder «Normalbetrieb» gewählt wird." };
     if (leistung > 0) return { art: "gut", icon: "mdi:fire", text: "Alles in Ordnung. Der Holzkessel brennt und lädt den Wärmespeicher.", klein: `Er arbeitet mit ${Math.round(leistung)} % Leistung.` + speicher };
@@ -280,8 +304,13 @@ class HargassnerSchemaCard extends HTMLElement {
     /* Holzschnitzel-Lager und Förderschnecke */
     s += `<g data-teil="lager">
       <rect class="rahmen" x="40" y="70" width="200" height="110" rx="10" fill="#efe4d1" stroke="#b9a07a" stroke-width="2"/>
-      <path d="M60 165 Q100 105 140 125 T225 165 Z" fill="#c69c62"/>
+      ${(() => {
+        const pr = this._attr(this._v.lager_rest).prozent;
+        const h = pr === undefined || pr === null ? 40 : Math.max(4, Math.min(62, (pr / 100) * 62));
+        return `<path d="M52 172 Q90 ${172 - h * 1.6} 140 ${172 - h} T228 172 Z" fill="#c69c62"/>`;
+      })()}
       <text x="140" y="95" text-anchor="middle" font-size="16" font-weight="600" fill="#5c4527">Holzschnitzel-Lager</text>
+      ${this._z(this._v.lager_rest) !== null ? `<rect x="88" y="130" width="104" height="28" rx="6" fill="rgba(255,255,255,.9)"/><text x="140" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#3d2e1a">≈ ${komma(this._z(this._v.lager_rest), 0)} m³</text>` : ""}
       <rect x="128" y="180" width="18" height="120" fill="#8a9097"/>
       ${brennt ? `<path class="fluss" d="M137 182 V298" stroke="#d8c39b" stroke-width="8" fill="none"/>` : ""}
     </g>`;
@@ -425,6 +454,47 @@ class HargassnerSchemaCard extends HTMLElement {
     </div>`;
   }
 
+  _feldWartung() {
+    const v = this._v;
+    const tage = this._z(v.wartung_tage);
+    const at = this._attr(v.wartung_tage);
+    const prozent = this._z(v.asche_fuellstand) ?? at.prozent ?? 0;
+    const faellig = this._datumText(v.wartung_am);
+    const zyklus = at.zyklus_tage;
+    const farbe = tage !== null && tage < 1 ? "#dc2626" : tage !== null && tage < 3 ? "#d97706" : "#16a34a";
+    const geleert = this._datumText(v.asche_geleert_am);
+    return `<div class="feld">
+      <h2><ha-icon icon="mdi:wrench-clock"></ha-icon>Wartung<span class="zustand ${tage !== null && tage < 1 ? "" : "an"}" style="${tage !== null && tage < 1 ? "background:#fde7e7;color:#8c1d1d" : ""}">${tage !== null && tage < 1 ? "jetzt fällig" : "in Ordnung"}</span></h2>
+      <div><div style="font-size:14px;color:#6b7280">Aschebox leeren und Kessel reinigen</div>
+        <div class="gross"><b style="color:${farbe}">${esc(this._tageText(tage))}</b>${faellig ? `<span>${esc(faellig)}</span>` : ""}</div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:13px;color:#6b7280"><span>Aschebox geschätzt</span><span>${Math.round(prozent)} % voll</span></div>
+        <div style="height:14px;background:#eef0f3;border-radius:7px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100, prozent)}%;background:${farbe}"></div></div></div>
+      <div class="erklaerung">Berechnet aus der Laufzeit des Kessels.${zyklus ? ` Bei der Heizleistung der letzten Tage ist die Box nach etwa ${Math.round(zyklus)} Tagen voll.` : ""} Spätestens nach ${komma(this._z(v.wartung_max) ?? 14, 0)} Tagen wird an die Wartung erinnert.${geleert ? ` Zuletzt geleert: ${esc(geleert)}.` : ""}</div>
+      ${v.asche_geleert ? `<button class="rund-breit" data-asche>✓ Erledigt: Aschebox geleert</button>` : ""}
+    </div>`;
+  }
+
+  _feldLager() {
+    const v = this._v;
+    const rest = this._z(v.lager_rest);
+    const at = this._attr(v.lager_rest);
+    const tage = this._z(v.lager_reichweite);
+    const leer = this._datumText(v.lager_leer_am);
+    const menge = this._z(v.lager_menge);
+    return `<div class="feld">
+      <h2><ha-icon icon="mdi:warehouse"></ha-icon>Holzschnitzel<span class="zustand ${tage !== null && tage < 10 ? "" : "an"}">${at.prozent !== undefined && at.prozent !== null ? at.prozent + " % voll" : ""}</span></h2>
+      <div class="gross"><b>≈ ${rest === null ? "–" : komma(rest, 0)} m³</b><span>noch im Lager</span></div>
+      <div class="zeilen">
+        <div><span>Reicht noch</span><span>${tage === null ? "–" : "ca. " + Math.round(tage) + " Tage"}</span></div>
+        ${leer ? `<div><span>Voraussichtlich leer</span><span>${esc(leer)}</span></div>` : ""}
+        ${at.pro_tag ? `<div><span>Verbrauch zurzeit</span><span>ca. ${komma(at.pro_tag, 1)} m³ pro Tag</span></div>` : ""}
+        ${at.gefuellt_am ? `<div><span>Zuletzt gefüllt</span><span>${esc(new Date(at.gefuellt_am + "T12:00:00").toLocaleDateString("de-CH"))}${menge ? ", " + komma(menge, 0) + " m³" : ""}</span></div>` : ""}
+      </div>
+      <div class="erklaerung">Geschätzt aus der Laufzeit des Kessels. Bei kaltem Wetter steigt der Verbrauch, die Reichweite wird dann kürzer.</div>
+      <button class="knopf-klein" data-lager><ha-icon icon="mdi:truck-delivery-outline"></ha-icon>Lager wurde aufgefüllt</button>
+    </div>`;
+  }
+
   _feldKessel() {
     const k = this._a.kessel || {};
     const p = this._a.puffer || {};
@@ -473,6 +543,8 @@ class HargassnerSchemaCard extends HTMLElement {
         <div class="raster">
           ${(a.heizkreise || []).map((h, i) => this._feldHaus(h, i)).join("")}
           ${a.frischwasser?.[0] ? this._feldWarmwasser(a.frischwasser[0]) : ""}
+          ${this._v.wartung_tage ? this._feldWartung() : ""}
+          ${this._v.lager_rest ? this._feldLager() : ""}
           ${a.kessel ? this._feldKessel() : ""}
         </div>
       </div>
@@ -492,7 +564,7 @@ class HargassnerSchemaCard extends HTMLElement {
     const k = a.kessel || {};
     const p = a.puffer || {};
     const texte = {
-      lager: ["Holzschnitzel-Lager", `Hier lagern die Holzschnitzel. Ein Rührwerk am Boden und eine Förderschnecke bringen sie automatisch zum Kessel, sobald er brennt.${this._config.lagerstand && this._z(this._config.lagerstand) !== null ? ` Zurzeit liegen etwa ${komma(this._z(this._config.lagerstand), 0)} kg im Lager.` : ""}`],
+      lager: ["Holzschnitzel-Lager", `Hier lagern die Holzschnitzel. Ein Rührwerk am Boden und eine Förderschnecke bringen sie automatisch zum Kessel, sobald er brennt.${this._z(this._v.lager_rest) !== null ? ` Geschätzt sind noch etwa ${komma(this._z(this._v.lager_rest), 0)} m³ im Lager, das reicht ${this._tageText(this._z(this._v.lager_reichweite)).replace("in ca. ", "ca. ")}.` : ""}`],
       kessel: ["Holzkessel", `Der Kessel verbrennt die Holzschnitzel und erwärmt damit Wasser. Dieses warme Wasser fliesst in den Wärmespeicher. Er startet und stoppt von selbst. Zurzeit: ${(this._z(k.leistung) ?? 0) > 0 ? "er brennt" : "er ruht"}, Temperatur ${this._grad(k.temperatur)}.`],
       ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden."],
       puffer: ["Wärmespeicher", `Ein grosser, gut isolierter Wassertank. Er speichert die Wärme vom Kessel, damit die Häuser und das Warmwasser auch dann warm bleiben, wenn der Kessel ruht. Oben ist das Wasser am heissesten (${this._grad(p.oben)}), unten am kühlsten (${this._grad(p.unten)}). Gefüllt: ${this._z(p.ladung) === null ? "–" : Math.round(this._z(p.ladung)) + " %"}.`],
@@ -537,18 +609,47 @@ class HargassnerSchemaCard extends HTMLElement {
 
   _frageHtml() {
     const q = this._frage;
-    return `<div class="bestaetigen"><div class="box"><h3>${esc(q.titel)}</h3><div>${esc(q.text)}</div>
+    return `<div class="bestaetigen"><div class="box"><h3>${esc(q.titel)}</h3><div>${esc(q.text)}</div>${q.felder || ""}
       <div class="knoepfe"><button class="nein" data-frage="nein">Abbrechen</button><button class="ja" data-frage="ja">${esc(q.ja || "Ja, ändern")}</button></div></div></div>`;
   }
 
   _klick(e) {
-    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil]");
+    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil],[data-asche],[data-lager],[data-voll]");
     if (!el) return;
     const d = el.dataset;
     if (d.frage) {
       const q = this._frage;
       this._frage = null;
-      if (d.frage === "ja" && q) q.aktion();
+      if (d.frage === "ja" && q) q.aktion(this.shadowRoot.querySelector(".bestaetigen"));
+      this._zeichnen();
+    } else if (d.voll !== undefined) {
+      this.shadowRoot.querySelectorAll("[data-voll]").forEach((b) => b.classList.toggle("an", b === el));
+    } else if (d.asche !== undefined) {
+      const stufen = [["", "Weiss nicht"], ["25", "Fast leer"], ["50", "Halb voll"], ["75", "Fast voll"], ["100", "Ganz voll"]];
+      this._frage = {
+        titel: "Aschebox geleert und Kessel gereinigt?",
+        text: "Wie voll war die Box ungefähr? Damit wird die Berechnung genauer.",
+        felder: `<div class="wahl klein" style="margin-top:12px">${stufen.map(([w, t]) => `<button data-voll="${w}" class="${w === "" ? "an" : ""}">${t}</button>`).join("")}</div>`,
+        ja: "Ja, erledigt",
+        aktion: (box) => {
+          const w = box?.querySelector("[data-voll].an")?.dataset.voll;
+          const daten = w ? { fuellstand: parseFloat(w) } : {};
+          this._hass.callService("hargassner_touch_pro", "asche_geleert", daten);
+        },
+      };
+      this._zeichnen();
+    } else if (d.lager !== undefined) {
+      const vorher = this._z(this._v.lager_menge) || "";
+      this._frage = {
+        titel: "Lager aufgefüllt?",
+        text: "Wie viele Kubikmeter Holzschnitzel sind jetzt im Lager (lose gemessen, wie auf dem Lieferschein)?",
+        felder: `<div style="margin-top:12px;display:flex;align-items:center;gap:8px"><input type="number" min="1" max="500" step="0.5" value="${vorher}" data-menge style="font:inherit;font-size:20px;width:120px;padding:6px 8px;border:1px solid #cfd4da;border-radius:8px"> m³</div>`,
+        ja: "Speichern",
+        aktion: (box) => {
+          const menge = parseFloat(box?.querySelector("[data-menge]")?.value);
+          if (menge > 0) this._hass.callService("hargassner_touch_pro", "lager_gefuellt", { menge });
+        },
+      };
       this._zeichnen();
     } else if (d.schritt) this._schritt(d.entity, parseFloat(d.schritt));
     else if (d.art) {

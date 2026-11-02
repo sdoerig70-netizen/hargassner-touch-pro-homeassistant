@@ -27,6 +27,7 @@ from .const import (
     SERVICE_START_IGNITION,
 )
 from .coordinator import HargassnerCoordinator
+from .verbrauch import Verbrauchsrechner
 from .entity_base import bausteingeraet, hauptgeraet, messkanalgeraet
 from .beschriftung import widget_name as deutscher_widget_name
 
@@ -67,6 +68,23 @@ SET_PARAMETER_SCHEMA = vol.Schema(
     }
 )
 START_IGNITION_SCHEMA = vol.Schema({vol.Optional("anlage"): cv.string})
+LAGER_SCHEMA = vol.Schema(
+    {
+        vol.Required("menge"): vol.Coerce(float),
+        vol.Optional("datum"): cv.datetime,
+        vol.Optional("bereits_verbraucht"): vol.Coerce(float),
+        vol.Optional("anlage"): cv.string,
+    }
+)
+ASCHE_SCHEMA = vol.Schema({vol.Optional("fuellstand"): vol.Coerce(float), vol.Optional("anlage"): cv.string})
+
+
+def _rechner(hass: HomeAssistant, anlage: str | None) -> list:
+    return [
+        hass.data[DOMAIN].get(f"_verbrauch_{eid}")
+        for eid, c in hass.data.get(DOMAIN, {}).items()
+        if isinstance(c, HargassnerCoordinator) and (not anlage or anlage in (c.installation_id, c.installation_name))
+    ]
 
 
 def _koordinatoren(hass: HomeAssistant, anlage: str | None) -> list[HargassnerCoordinator]:
@@ -150,6 +168,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
+    # Brennstoff- und Wartungsrechner (Hackgut im Lager, Aschebox)
+    rechner = Verbrauchsrechner(hass, coordinator, entry.entry_id)
+    await rechner.async_laden()
+    hass.data[DOMAIN][f"_verbrauch_{entry.entry_id}"] = rechner
+    entry.async_on_unload(coordinator.async_add_listener(rechner.aktualisieren))
+
     # Hauptgerät anlegen und die Bausteine darunter hängen (per via_device_id; das
     # veraltete via_device in DeviceInfo lehnen neuere Home-Assistant-Versionen ab)
     geraete = dr.async_get(hass)
@@ -202,6 +226,25 @@ def _dienste_registrieren(hass: HomeAssistant) -> None:
             return
         raise HomeAssistantError(f"Baustein «{baustein}» nicht gefunden")
 
+    async def lager_gefuellt(call: ServiceCall) -> None:
+        from homeassistant.util import dt as dt_util
+
+        datum = call.data.get("datum")
+        if datum is not None and datum.tzinfo is None:
+            datum = datum.replace(tzinfo=dt_util.get_default_time_zone())
+        for r in _rechner(hass, call.data.get("anlage")):
+            if r:
+                r.lager_gefuellt(call.data["menge"], datum, call.data.get("bereits_verbraucht"))
+
+    async def asche_geleert(call: ServiceCall) -> None:
+        for r in _rechner(hass, call.data.get("anlage")):
+            if r:
+                r.asche_geleert(call.data.get("fuellstand"))
+
+    for name, funktion, schema in (("lager_gefuellt", lager_gefuellt, LAGER_SCHEMA), ("asche_geleert", asche_geleert, ASCHE_SCHEMA)):
+        if not hass.services.has_service(DOMAIN, name):
+            hass.services.async_register(DOMAIN, name, funktion, schema=schema)
+
     if not hass.services.has_service(DOMAIN, SERVICE_START_IGNITION):
         hass.services.async_register(
             DOMAIN, SERVICE_START_IGNITION, zuendung_starten, schema=START_IGNITION_SCHEMA
@@ -220,8 +263,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         coordinator: HargassnerCoordinator = hass.data[DOMAIN].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(f"_verbrauch_{entry.entry_id}", None)
         await coordinator.api.logout()
         if not [k for k in hass.data[DOMAIN] if not str(k).startswith("_")]:
             hass.services.async_remove(DOMAIN, SERVICE_START_IGNITION)
             hass.services.async_remove(DOMAIN, SERVICE_SET_PARAMETER)
+            hass.services.async_remove(DOMAIN, "lager_gefuellt")
+            hass.services.async_remove(DOMAIN, "asche_geleert")
     return unload_ok

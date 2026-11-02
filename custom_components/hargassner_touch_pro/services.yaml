@@ -56,3 +56,59 @@ set_time_program:
       example: '[{"days": ["MO","TU","WE","TH","FR"], "times": ["T06:00PT2H", "T16:00PT6H"]}, {"days": ["SA","SU"], "times": ["T07:00PT15H"]}]'
       selector:
         object:
+
+lager_gefuellt:
+  name: Lager gefüllt
+  description: Hält fest, dass das Hackgutlager gefüllt wurde. Ab dann wird der Verbrauch aus der Kesselleistung abgezogen.
+  fields:
+    menge:
+      name: Menge
+      description: Eingefüllte Menge in Schüttraummetern (Srm, ≈ m³ lose).
+      required: true
+      example: 24
+      selector:
+        number:
+          min: 0
+          max: 500
+          step: 0.5
+          unit_of_measurement: Srm
+    datum:
+      name: Datum
+      description: Wann gefüllt wurde. Liegt es zurück, wird der Verbrauch seither aus dem Tagesmittel geschätzt.
+      required: false
+      selector:
+        datetime:
+    bereits_verbraucht:
+      name: Bereits verbraucht
+      description: Optional, falls bekannt, statt der Schätzung (Srm).
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 500
+          step: 0.1
+    anlage:
+      name: Anlage
+      required: false
+      selector:
+        text:
+
+asche_geleert:
+  name: Aschebox geleert
+  description: Hält die Leerung fest. Mit dem tatsächlichen Füllstand lernt der Rechner dazu.
+  fields:
+    fuellstand:
+      name: Füllstand vor dem Leeren
+      description: Wie voll war die Box tatsächlich (%)? Optional.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 5
+          unit_of_measurement: "%"
+    anlage:
+      name: Anlage
+      required: false
+      selector:
+        text:
