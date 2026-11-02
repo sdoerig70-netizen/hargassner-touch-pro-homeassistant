@@ -360,6 +360,8 @@ class HargassnerAnlageCard extends HTMLElement {
 
   disconnectedCallback() {
     clearInterval(this._takt);
+    if (this._fensterHorcher) window.removeEventListener("resize", this._fensterHorcher);
+    this._fensterHorcher = null;
     this._beobachter?.disconnect();
   }
 
@@ -1124,7 +1126,7 @@ class HargassnerAnlageCard extends HTMLElement {
     }
     knoepfe += `<span class="trenner"></span><button data-zoom="rein" title="Hineinzoomen">＋</button><button data-zoom="raus" title="Herauszoomen">－</button>
       <button data-zoom="zurueck" id="zoomzurueck" style="display:none">Zoom zurücksetzen</button>
-      <span class="zoominfo" id="zoominfo">Zum Zoomen im Diagramm einen Bereich mit der Maus aufziehen</span>`;
+      <span class="zoominfo" id="zoominfo">Zoomen: Mausrad oder Bereich aufziehen · Verschieben: Umschalttaste + Mausrad</span>`;
     return `<div class="gruppen">${liste}</div>
       <div class="blatt"><div class="zeitraum">${knoepfe}</div>${this._navigation()}<div id="diagramme"><div class="leer">Lade Verlauf …</div></div></div>`;
   }
@@ -1315,6 +1317,21 @@ class HargassnerAnlageCard extends HTMLElement {
       rechts = mitWerten("%").map((l) => ({ ...l, rechts: true }));
       nachEinheit.delete("%");
     }
+    // Diagramme füllen die verfügbare Höhe bis zum unteren Fensterrand
+    const geplant = [...nachEinheit].filter(([e, l]) => !aus.includes(e) && l.some((x) => d.reihen[x.id]?.length));
+    const signale = geplant.filter(([e]) => e === "Signal").length;
+    const normale = geplant.length - signale;
+    const oben = ziel.getBoundingClientRect().top;
+    const fenster = this._config.diagramm_hoehe ? null : window.innerHeight;
+    const frei = fenster ? fenster - oben - 34 - geplant.length * 58 - signale * 140 : 0;
+    this._hoehe = this._config.diagramm_hoehe || (normale ? Math.max(240, Math.floor(frei / normale)) : 260);
+    this._fensterHoehe = window.innerHeight;
+    if (!this._fensterHorcher) {
+      this._fensterHorcher = () => {
+        if (this._reiter === "messwerte" && this._daten && Math.abs(window.innerHeight - (this._fensterHoehe || 0)) > 20) this._zeichneDiagramme();
+      };
+      window.addEventListener("resize", this._fensterHorcher);
+    }
     for (const [einheit, linien] of nachEinheit) {
       if (aus.includes(einheit)) continue;
       const links = linien.filter((l) => d.reihen[l.id]?.length);
@@ -1338,7 +1355,7 @@ class HargassnerAnlageCard extends HTMLElement {
     if (zurueck) zurueck.style.display = this._zoom ? "" : "none";
     if (info) {
       const f = (t) => new Date(t).toLocaleString("de-CH", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-      info.textContent = this._zoom ? `Ausschnitt ${f(this._zoom[0])} – ${f(this._zoom[1])}` : "Zum Zoomen im Diagramm einen Bereich mit der Maus aufziehen";
+      info.textContent = this._zoom ? `Ausschnitt ${f(this._zoom[0])} – ${f(this._zoom[1])}` : "Zoomen: Mausrad oder Bereich aufziehen · Verschieben: Umschalttaste + Mausrad";
     }
 
     ziel.querySelectorAll(".diagramm svg").forEach((svg) => {
@@ -1350,6 +1367,24 @@ class HargassnerAnlageCard extends HTMLElement {
       svg.addEventListener("pointerup", (e) => this._ziehEnde(e));
       svg.addEventListener("pointercancel", () => this._ziehAbbruch());
       svg.addEventListener("dblclick", () => this._zoomen("raus"));
+      svg.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          const [t0, t1] = this._fenster();
+          const breite = t1 - t0;
+          const delta = e.deltaY || e.deltaX;
+          if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            const schub = (delta > 0 ? 1 : -1) * breite * 0.12;
+            this._setzeZoom(t0 + schub, t1 + schub);
+            return;
+          }
+          const t = this._zeitBei(this._svgX(e, svg), svg);
+          const f = delta > 0 ? 1.25 : 0.8;
+          this._setzeZoom(t - (t - t0) * f, t + (t1 - t) * f);
+        },
+        { passive: false }
+      );
       svg.addEventListener("pointerleave", () => {
         svg.parentElement.querySelector(".tipp").style.display = "none";
         const l = svg.querySelector(".fadenkreuz");
@@ -1449,7 +1484,7 @@ class HargassnerAnlageCard extends HTMLElement {
 
   _svgDiagramm(linien, d, signal, nr, rechts = []) {
     const B = this._breite || 800;
-    const H = signal ? 140 : Math.round(Math.min(340, Math.max(240, B * 0.24)));
+    const H = signal ? 140 : this._hoehe || 300;
     const L = 44;
     const zweiteSichtbar = rechts.filter((l) => !this._ausgeblendet.has(l.id));
     const R = rechts.length ? 44 : 12;
