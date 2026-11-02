@@ -96,7 +96,7 @@ def _baustein_finden(coord: HargassnerCoordinator, baustein: str) -> dict | None
 
 
 KARTEN_BASIS = "/hargassner_touch_pro"
-KARTEN = ("heizkurve-card.js", "anlage-card.js", "anlage-3d-card.js")
+KARTEN = ("heizkurve-card.js", "anlage-card.js", "anlage-3d-card.js", "schema-card.js")
 
 
 async def _karte_registrieren(hass: HomeAssistant) -> None:

@@ -103,6 +103,12 @@ Modell: Vorlauf = Raumsoll + Steilheit × (Raumsoll − Aussentemperatur). Weich
 
 Parameter und Messkanäle findet die Karte selbst. Die Kacheln brauchen die Zuordnung der Entitäten, ein vollständiges Beispiel liegt in `dashboard/hargassner.yaml`. Am besten als Ansicht vom Typ «Panel» einsetzen.
 
+## Einfache Ansicht für alle
+
+Die Karte `custom:hargassner-schema-card` zeigt die Heizung als einfaches Schema: Holzschnitzel-Lager, Holzkessel, Wärmespeicher, Warmwasser-Station und die Häuser. Leitungen sind nach Temperatur eingefärbt, wandernde Striche zeigen, wo gerade Wasser fliesst. Oben steht in einem Satz, was die Heizung gerade tut. Ein Tippen auf einen Teil erklärt ihn in Alltagssprache.
+
+Darunter wird pro Haus mit grossen Knöpfen bedient: Wohlfühl- und Spartemperatur mit + und −, Betrieb «Nach Zeitplan», «Immer warm», «Sparbetrieb», «Aus», «Jetzt warm», «Jetzt sparen» und der Zeitplan. Das Ausschalten eines Hauses und jede Änderung am Kessel fragen vorher nach. «Für Fachleute» öffnet die vollständige Anlagen-Karte. Konfiguration wie bei der Anlagen-Karte unter `anlage:`, dazu optional `ruecklauf`, `ladepumpe`, `lagerstand` und `cloud`. Vorlage: `dashboard/heizung-einfach.yaml`.
+
 ## 3D-Ansicht
 
 Die Karte `custom:hargassner-anlage-3d-card` zeigt Heizraum und Lager als 3D-Modell. Rohre und Puffer sind nach Temperatur eingefärbt, die Strömung läuft, wenn die zuständige Pumpe aktiv ist, Flamme, Rührwerk und Rauch folgen der Kesselleistung. Ein Klick auf ein Bauteil zeigt Werte und Bedienung; Trends, Parameter, Zeitprogramm und Heizkurve öffnen die bestehenden Karten.
