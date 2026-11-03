@@ -76,7 +76,9 @@ LAGER_SCHEMA = vol.Schema(
         vol.Optional("anlage"): cv.string,
     }
 )
-ASCHE_SCHEMA = vol.Schema({vol.Optional("fuellstand"): vol.Coerce(float), vol.Optional("anlage"): cv.string})
+ASCHE_SCHEMA = vol.Schema(
+    {vol.Optional("fuellstand"): vol.Coerce(float), vol.Optional("datum"): cv.datetime, vol.Optional("anlage"): cv.string}
+)
 
 
 def _rechner(hass: HomeAssistant, anlage: str | None) -> list:
@@ -237,9 +239,14 @@ def _dienste_registrieren(hass: HomeAssistant) -> None:
                 r.lager_gefuellt(call.data["menge"], datum, call.data.get("bereits_verbraucht"))
 
     async def asche_geleert(call: ServiceCall) -> None:
+        from homeassistant.util import dt as dt_util
+
+        datum = call.data.get("datum")
+        if datum is not None and datum.tzinfo is None:
+            datum = datum.replace(tzinfo=dt_util.get_default_time_zone())
         for r in _rechner(hass, call.data.get("anlage")):
             if r:
-                r.asche_geleert(call.data.get("fuellstand"))
+                r.asche_geleert(call.data.get("fuellstand"), datum)
 
     for name, funktion, schema in (("lager_gefuellt", lager_gefuellt, LAGER_SCHEMA), ("asche_geleert", asche_geleert, ASCHE_SCHEMA)):
         if not hass.services.has_service(DOMAIN, name):

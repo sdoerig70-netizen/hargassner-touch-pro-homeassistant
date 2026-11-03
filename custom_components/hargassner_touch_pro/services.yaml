@@ -107,6 +107,12 @@ asche_geleert:
           max: 100
           step: 5
           unit_of_measurement: "%"
+    datum:
+      name: Datum
+      description: Wann geleert wurde (oder Inbetriebnahme, wenn noch nie geleert). Leer = jetzt.
+      required: false
+      selector:
+        datetime:
     anlage:
       name: Anlage
       required: false

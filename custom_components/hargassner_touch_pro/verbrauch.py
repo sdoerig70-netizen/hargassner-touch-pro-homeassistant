@@ -289,7 +289,21 @@ class Verbrauchsrechner:
                 neu = self.daten.get("asche_faktor", 1.0) * fuellstand / geschaetzt
                 # gleitend anpassen, damit einzelne Ausreisser nicht alles verschieben
                 self.daten["asche_faktor"] = round(0.5 * self.daten.get("asche_faktor", 1.0) + 0.5 * neu, 3)
-        self.daten["asche"] = {"energie": self.daten["energie_kwh"], "datum": (datum or dt_util.now()).isoformat()}
+        datum = datum or dt_util.now()
+        basis = self.daten["energie_kwh"]
+        if datum < dt_util.now() - timedelta(hours=1):
+            # Leerung in der Vergangenheit: aufgezeichnete Tage ab dem Datum, davor das Tagesmittel
+            tag0 = dt_util.as_local(datum).date().isoformat()
+            erfasst = sum(v for t, v in self.daten["tage"].items() if t > tag0)
+            erster = min(self.daten["tage"], default=None)
+            ohne = 0.0
+            if erster and erster > tag0:
+                start = datetime.fromisoformat(erster + "T00:00:00").replace(tzinfo=dt_util.get_default_time_zone())
+                ohne = max(0.0, (start - datum).total_seconds() / 86400) * (self.tagesmittel_kwh() or 0.0)
+            elif not erster:
+                ohne = (dt_util.now() - datum).total_seconds() / 86400 * (self.tagesmittel_kwh() or 0.0)
+            basis = self.daten["energie_kwh"] - erfasst - ohne
+        self.daten["asche"] = {"energie": basis, "datum": datum.isoformat()}
         self.speichern()
         self._melden()
 

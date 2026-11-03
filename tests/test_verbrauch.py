@@ -72,3 +72,14 @@ def test_asche_lernt(monkeypatch):
     geschaetzt = r.asche()["prozent"]
     r.asche_geleert(fuellstand=geschaetzt * 1.5)
     assert 1.2 < r.daten["asche_faktor"] < 1.3
+
+
+def test_asche_rueckwirkend(monkeypatch):
+    r = _rechner(monkeypatch)
+    heute = dt_util.now()
+    for i in (1, 2, 3):
+        r.daten["tage"][(heute - timedelta(days=i)).date().isoformat()] = 350.0
+    r.daten["energie_kwh"] = 1050.0
+    # vor 6 Tagen in Betrieb genommen: 3 Tage aufgezeichnet, 3 Tage mit dem Mittel geschätzt
+    r.asche_geleert(datum=heute - timedelta(days=6))
+    assert abs((r.daten["energie_kwh"] - r.daten["asche"]["energie"]) - 350 * 6) < 400
