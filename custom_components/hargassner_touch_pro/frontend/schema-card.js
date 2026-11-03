@@ -67,7 +67,7 @@ const STIL = `
 .kopf h1 { margin:0; font-size:22px; font-weight:600; }
 .kopf .aussen { display:flex; align-items:center; gap:6px; background:#fff; border-radius:20px; padding:6px 14px; box-shadow:0 1px 3px rgba(0,0,0,.12); font-size:15px; }
 .kopf .rechts { margin-left:auto; display:flex; gap:8px; }
-.knopf-klein { border:1px solid #cfd4da; background:#fff; border-radius:8px; padding:8px 12px; font:inherit; font-size:13px; cursor:pointer; color:#444; display:flex; gap:6px; align-items:center; }
+.knopf-klein { border:1px solid #cfd4da; background:#fff; border-radius:8px; padding:6px 9px; font:inherit; font-size:12px; cursor:pointer; color:#444; display:flex; gap:6px; align-items:center; }
 .knopf-klein ha-icon { --mdc-icon-size:18px; }
 .lage { border-radius:12px; padding:14px 18px; margin-bottom:14px; display:flex; gap:14px; align-items:center; font-size:17px; line-height:1.35; box-shadow:0 1px 3px rgba(0,0,0,.1); }
 .lage ha-icon { --mdc-icon-size:34px; flex:none; }
@@ -81,9 +81,8 @@ const STIL = `
 .bild .rollen { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 .bildfuss { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:4px 8px 4px; font-size:12px; color:#8a9099; }
 .vollbild { overflow:auto; background:#fff; font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; color:#22262b; touch-action:pan-x pan-y pinch-zoom; }
-.vollbild svg { width:1500px; max-width:none; height:auto; display:block; }
+.vollbild svg { width:1200px; max-width:none; height:auto; display:block; }
 @media (max-width: 700px) {
-  .bild .rollen svg { width:900px; max-width:none; }
 }
 .bild .hinweis { position:absolute; left:14px; bottom:10px; font-size:12px; color:#8a9099; }
 [data-teil] { cursor:pointer; }
@@ -97,32 +96,36 @@ const STIL = `
 @keyframes flackern { from { transform:scale(1, .92); } to { transform:scale(.94, 1.06); } }
 .rauch { animation:steigen 3s linear infinite; opacity:0; }
 @keyframes steigen { 0% { transform:translate(0, 0); opacity:.6; } 100% { transform:translate(10px, -40px); opacity:0; } }
-.raster { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap:14px; }
-.feld { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); padding:16px 18px; display:flex; flex-direction:column; gap:12px; }
-.feld h2 { margin:0; font-size:19px; display:flex; align-items:center; gap:8px; }
-.feld h2 ha-icon { --mdc-icon-size:24px; color:#5b6470; }
-.feld h2 .zustand { margin-left:auto; font-size:13px; font-weight:600; padding:4px 10px; border-radius:12px; background:#eef0f3; color:#555; }
+.haupt { display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(0, 1fr); gap:12px; align-items:start; }
+.haupt > * { min-width:0; }
+.haupt .bild { margin-bottom:0; position:sticky; top:8px; }
+@media (max-width: 1100px) { .haupt { grid-template-columns:1fr; } .haupt .bild { position:static; } }
+.raster { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 235px), 1fr)); gap:10px; }
+.feld { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); padding:11px 12px; display:flex; flex-direction:column; gap:8px; }
+.feld h2 { margin:0; font-size:16px; display:flex; align-items:center; gap:6px; }
+.feld h2 ha-icon { --mdc-icon-size:19px; color:#5b6470; }
+.feld h2 .zustand { margin-left:auto; font-size:11px; font-weight:600; padding:3px 8px; border-radius:12px; background:#eef0f3; color:#555; }
 .feld h2 .zustand.an { background:#e7f6ec; color:#1d5e33; }
 .gross { display:flex; align-items:baseline; gap:8px; }
-.gross b { font-size:34px; font-weight:600; }
-.gross span { color:#6b7280; font-size:14px; }
-.regler { display:flex; align-items:center; gap:12px; }
+.gross b { font-size:24px; font-weight:600; }
+.gross span { color:#6b7280; font-size:12px; }
+.regler { display:flex; align-items:center; gap:8px; }
 .regler .text { flex:1; }
-.regler .text div { font-size:13.5px; color:#6b7280; }
-.regler .text b { font-size:26px; }
+.regler .text div { font-size:11.5px; color:#6b7280; }
+.regler .text b { font-size:20px; }
 .regler .text b.wartet { color:#d97706; }
-.rund { width:52px; height:52px; border-radius:50%; border:0; font-size:28px; line-height:1; cursor:pointer; color:#fff; flex:none; }
+.rund { width:40px; height:40px; border-radius:50%; border:0; font-size:22px; line-height:1; cursor:pointer; color:#fff; flex:none; }
 .rund.minus { background:#3b82f6; }
 .rund.plus { background:#ef4444; }
 .rund:disabled { opacity:.35; cursor:default; }
-.wahl { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.wahl button { border:2px solid #dde1e6; background:#fff; border-radius:10px; padding:10px 8px; font:inherit; font-size:14px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:#333; }
-.wahl button ha-icon { --mdc-icon-size:22px; color:#6b7280; }
+.wahl { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.wahl button { border:2px solid #dde1e6; background:#fff; border-radius:9px; padding:6px 6px; font:inherit; font-size:12.5px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:#333; }
+.wahl button ha-icon { --mdc-icon-size:17px; color:#6b7280; }
 .wahl button.an { border-color:#2b7bd6; background:#eef5fe; color:#1d4a80; font-weight:600; }
 .wahl button.an ha-icon { color:#2b7bd6; }
-.wahl.klein button { flex-direction:row; justify-content:center; font-size:13px; padding:8px; }
-.erklaerung { font-size:13.5px; color:#555; background:#f6f7f9; border-radius:8px; padding:8px 10px; line-height:1.4; }
-.zeilen div { display:flex; justify-content:space-between; font-size:14px; padding:4px 0; border-bottom:1px solid #f0f1f3; }
+.wahl.klein button { flex-direction:row; justify-content:center; font-size:12px; padding:5px; }
+.erklaerung { font-size:12px; color:#555; background:#f6f7f9; border-radius:8px; padding:6px 8px; line-height:1.35; }
+.zeilen div { display:flex; justify-content:space-between; font-size:12.5px; padding:3px 0; border-bottom:1px solid #f0f1f3; }
 .zeilen div span:last-child { font-weight:600; }
 .links { display:flex; gap:8px; flex-wrap:wrap; }
 .ueber { position:fixed; inset:0; z-index:20; background:rgba(0,0,0,.45); display:flex; align-items:stretch; justify-content:center; padding:24px; box-sizing:border-box; }
@@ -140,7 +143,7 @@ const STIL = `
 .bestaetigen button { border:0; border-radius:8px; padding:10px 16px; font:inherit; cursor:pointer; }
 .bestaetigen .ja { background:#2b7bd6; color:#fff; font-weight:600; }
 .bestaetigen .nein { background:#eef0f3; }
-.rund-breit { border:0; border-radius:10px; padding:12px 14px; font:inherit; font-size:15px; font-weight:600; background:#16a34a; color:#fff; cursor:pointer; }
+.rund-breit { border:0; border-radius:9px; padding:8px 10px; font:inherit; font-size:13px; font-weight:600; background:#16a34a; color:#fff; cursor:pointer; }
 @media (max-width: 600px) { .ueber { padding:0; } .kopf h1 { font-size:19px; } }
 `;
 
@@ -296,17 +299,24 @@ class HargassnerSchemaCard extends HTMLElement {
     const rl = this._z(this._config.ruecklauf) ?? pU;
     const laden = brennt || this._an(this._config.ladepumpe);
     const ladung = this._z(p.ladung);
-    const breite = 1200;
-    // Häuser verteilt rechts
+    // Fast quadratisches Bild: Lager und Kessel links, Speicher Mitte, Warmwasser oben rechts,
+    // Häuser mit Heizgruppen rechts auf dem Verteilbalken
     const n = Math.max(1, hk.length);
-    // Häuser und Reserveabgang gleichmässig auf dem Verteilbalken
-    const schritt = Math.min(135, 280 / n);
-    const hx = (i) => 845 + i * schritt;
-    let s = `<svg viewBox="0 0 ${breite} 660" role="img" aria-label="Heizung als Schema">
+    const schritt = Math.min(120, 240 / n);
+    const hx = (i) => 690 + i * schritt;
+    const breite = Math.max(900, Math.round(hx(hk.length) + 40));
+    // Speicher wird in alten Koordinaten gezeichnet und verschoben
+    const DX = -120;
+    const DY = 20;
+    const X = (x) => x + DX;
+    const Y = (y) => y + DY;
+    let s = `<svg viewBox="0 0 ${breite} 790" role="img" aria-label="Heizung als Schema">
 `;
 
     /* Holzschnitzel-Lager und Förderschnecke */
-    s += `<g data-teil="lager">
+    s += `<g data-teil="lager"><rect x="92" y="118" width="16" height="184" fill="#8a9097"/>
+      ${brennt ? `<path class="fluss" d="M100 120 V298" stroke="#d8c39b" stroke-width="7" fill="none"/>` : ""}
+      <g transform="translate(-12 -26) scale(0.8)">
       <rect class="rahmen" x="40" y="70" width="200" height="110" rx="10" fill="#efe4d1" stroke="#b9a07a" stroke-width="2"/>
       ${(() => {
         const pr = this._attr(this._v.lager_rest).prozent;
@@ -315,12 +325,10 @@ class HargassnerSchemaCard extends HTMLElement {
       })()}
       <text x="140" y="95" text-anchor="middle" font-size="16" font-weight="600" fill="#5c4527">Holzschnitzel-Lager</text>
       ${this._z(this._v.lager_rest) !== null ? `<rect x="88" y="130" width="104" height="28" rx="6" fill="rgba(255,255,255,.9)"/><text x="140" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#3d2e1a">≈ ${komma(this._z(this._v.lager_rest), 0)} m³</text>` : ""}
-      <rect x="128" y="180" width="18" height="120" fill="#8a9097"/>
-      ${brennt ? `<path class="fluss" d="M137 182 V298" stroke="#d8c39b" stroke-width="8" fill="none"/>` : ""}
-    </g>`;
+    </g></g>`;
 
     /* Holzkessel */
-    s += `<g data-teil="kessel">
+    s += `<g data-teil="kessel"><g transform="translate(-23 36) scale(0.88)">
       <rect class="rahmen" x="60" y="300" width="170" height="260" rx="14" fill="#b3191f" stroke="#7a1015" stroke-width="2"/>
       <rect x="82" y="330" width="126" height="34" rx="6" fill="#2a2d31"/>
       <text x="145" y="353" text-anchor="middle" font-size="18" font-weight="600" fill="#fff">${esc(this._grad(k.temperatur))}</text>
@@ -333,7 +341,7 @@ class HargassnerSchemaCard extends HTMLElement {
       <text x="145" y="590" text-anchor="middle" font-size="17" font-weight="600" fill="#22262b">Holzkessel</text>
       ${brennt ? [0, 1, 2].map((i) => `<circle class="rauch" style="animation-delay:${i}s" cx="82" cy="292" r="10" fill="#c8ccd2"/>`).join("") : ""}
       <rect x="72" y="282" width="20" height="18" fill="#6b7078"/>
-    </g>`;
+    </g></g>`;
 
     /* Speicher-Geometrie: Anschlüsse in der Höhe wie im Prinzipschema
        (Anteil der Speicherhöhe von oben: 7,5 % oben, 39 % Mitte oben, 49 % Solar ein, 62 % Mitte unten, 88 % Solar aus, 93 % unten) */
@@ -362,21 +370,21 @@ class HargassnerSchemaCard extends HTMLElement {
         <circle cx="${x}" cy="${y}" r="3.5" fill="${offen ? "#3a4048" : "#fff"}"/>`;
     };
     const grau = (d) => `<path d="${d}" fill="none" stroke="#b7bdc5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
-    const rlUnten = `M${wandL(yUnten)} ${yUnten} H370`;
-    const rlMitteWeg = `M${wandL(yMitteUnten)} ${yMitteUnten} H370 V${yUnten}`;
+    const rlUnten = `M${X(wandL(yUnten))} ${Y(yUnten)} H255`;
+    const rlMitteWeg = `M${X(wandL(yMitteUnten))} ${Y(yMitteUnten)} H255 V${Y(yUnten)}`;
     s += `<g data-teil="kessel">
-      ${this._rohr(`M230 330 H320 V${yOben} H${wandL(yOben)}`, kT, laden)}
-      ${this._rohr(`M370 ${yUnten} H230`, rl, laden)}
-      ${this._pumpe(290, yUnten, laden, 180)}
+      ${this._rohr(`M180 326 H240 V${Y(yOben)} H${X(wandL(yOben))}`, kT, laden)}
+      ${this._rohr(`M255 ${Y(yUnten)} H180`, rl, laden)}
+      ${this._pumpe(206, Y(yUnten), laden, 180)}
     </g>
     <g data-teil="umschaltung">
       ${rlMitte ? grau(rlUnten) + this._rohr(rlMitteWeg, rl, laden) : this._rohr(rlUnten, rl, laden) + grau(rlMitteWeg)}
-      ${kugelhahn(398, yUnten, !rlMitte, false)}
-      ${kugelhahn(398, yMitteUnten, rlMitte, false)}
+      ${kugelhahn(278, Y(yUnten), !rlMitte, false)}
+      ${kugelhahn(278, Y(yMitteUnten), rlMitte, false)}
     </g>`;
     s += `<g data-teil="ae">
-      <path d="M335 ${yUnten} V572" stroke="#8a9097" stroke-width="5"/>
-      <rect class="rahmen" x="315" y="572" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
+      <path d="M232 ${Y(yUnten)} V605" stroke="#8a9097" stroke-width="5"/>
+      <rect class="rahmen" x="212" y="605" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
     </g>`;
 
     /* Solar: Kollektor oben, Wendel unten im Speicher (Anschlüsse rechts) */
@@ -387,12 +395,12 @@ class HargassnerSchemaCard extends HTMLElement {
     const solarRohr = (d, t) =>
       soAktiv ? this._rohr(d, t, soPumpe, 6) : `<path d="${d}" fill="none" stroke="#c3c8cf" stroke-width="5" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
     s += `<g data-teil="solar">
-      <path class="rahmen" d="M548 118 L580 52 L672 52 L640 118 Z" fill="${soAktiv ? "#1f3b63" : "#e6e9ed"}" stroke="${soAktiv ? "#0f2440" : "#b7bdc5"}" stroke-width="2"/>
-      ${[0, 1, 2].map((i) => `<path d="M${571 + i * 23} 118 L${603 + i * 23} 52" stroke="${soAktiv ? "#4a6a96" : "#cfd4da"}" stroke-width="1.5"/>`).join("")}
-      <text x="610" y="40" text-anchor="middle" font-size="14" font-weight="600" fill="${soAktiv ? "#22262b" : "#8a9099"}">${soAktiv ? "Solar" + (soT !== null ? " " + komma(soT, 0) + " °C" : "") : "Solar (möglich)"}</text>
-      ${solarRohr(`M580 118 V${ySolarEin} H${wandR(ySolarEin)}`, soT ?? pU)}
-      ${solarRohr(`M${wandR(ySolarAus)} ${ySolarAus} H597 V118`, pU)}
-      ${soAktiv && so.pumpe ? this._pumpe(597, 300, soPumpe, -90) : ""}
+      <path class="rahmen" d="M395 130 L420 72 L505 72 L480 130 Z" fill="${soAktiv ? "#1f3b63" : "#e6e9ed"}" stroke="${soAktiv ? "#0f2440" : "#b7bdc5"}" stroke-width="2"/>
+      ${[0, 1, 2].map((i) => `<path d="M${416 + i * 21} 130 L${441 + i * 21} 72" stroke="${soAktiv ? "#4a6a96" : "#cfd4da"}" stroke-width="1.5"/>`).join("")}
+      <text x="450" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="${soAktiv ? "#22262b" : "#8a9099"}">${soAktiv ? "Solar" + (soT !== null ? " " + komma(soT, 0) + " °C" : "") : "Solar (möglich)"}</text>
+      ${solarRohr(`M455 130 V${Y(ySolarEin)} H${X(wandR(ySolarEin))}`, soT ?? pU)}
+      ${solarRohr(`M${X(wandR(ySolarAus))} ${Y(ySolarAus)} H472 V130`, pU)}
+      ${soAktiv && so.pumpe ? this._pumpe(472, 330, soPumpe, -90) : ""}
     </g>`;
 
     /* Wärmespeicher mit vier Fühlern, Solarwendel und Elektroeinsatz */
@@ -410,6 +418,7 @@ class HargassnerSchemaCard extends HTMLElement {
     const elektro = this._config.elektro;
     const eAn = elektro ? this._an(elektro) : false;
     const fuell = ladung === null ? 0 : Math.max(0, Math.min(100, ladung));
+    s += `<g transform="translate(${DX} ${DY})">`;
     s += `<defs><linearGradient id="speicher" x1="0" y1="0" x2="0" y2="1">${
       stopps.length ? stopps.map(([o, t]) => `<stop offset="${o.toFixed(3)}" stop-color="${tempFarbe(t)}"/>`).join("") : `<stop offset="0" stop-color="${tempFarbe(pO)}"/><stop offset="1" stop-color="${tempFarbe(pU)}"/>`
     }</linearGradient><clipPath id="speicherform"><rect x="420" y="210" width="140" height="350" rx="60"/></clipPath></defs>`;
@@ -432,44 +441,44 @@ class HargassnerSchemaCard extends HTMLElement {
       <text x="490" y="196" text-anchor="middle" font-size="17" font-weight="600">Wärmespeicher</text>
       <rect x="452" y="282" width="76" height="36" rx="8" fill="rgba(255,255,255,.88)"/>
       <text x="490" y="308" text-anchor="middle" font-size="22" font-weight="700">${ladung === null ? "–" : Math.round(ladung) + " %"}</text>
-    </g>`;
+    </g></g>`;
 
     /* Frischwasserstation: Vorlauf ganz oben rechts, Rücklauf Mitte unten rechts */
     if (f) {
       const fp = this._an(f.pumpe);
       const zapft = (this._z(f.durchfluss) ?? 0) > 0 || fp;
       s += `<g data-teil="warmwasser">
-        ${this._rohr(`M${wandR(yOben)} ${yOben} H678 V250`, this._z(f.vorlauf) ?? pO, fp, 7)}
-        ${this._rohr(`M${wandR(yMitteUnten)} ${yMitteUnten} H708 V250`, pU, fp, 7)}
-        <rect class="rahmen" x="630" y="140" width="120" height="110" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
-        <text x="690" y="176" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
-        <text x="690" y="206" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
-        <text x="690" y="236" text-anchor="middle" font-size="11" fill="#6b7280">Frischwasserstation</text>
-        ${this._rohr("M730 140 V108", this._z(f.auslauf_soll), zapft, 7)}
-        <path d="M716 108 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
-        ${zapft ? `<path class="fluss" d="M744 124 V138" stroke="#4aa3ff" stroke-width="4"/>` : ""}
-        <text x="733" y="94" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
+        ${this._rohr(`M${X(wandR(yOben))} ${Y(yOben)} H585 V215`, this._z(f.vorlauf) ?? pO, fp, 7)}
+        ${this._rohr(`M${X(wandR(yMitteUnten))} ${Y(yMitteUnten)} H532 V215`, pU, fp, 7)}
+        <rect class="rahmen" x="510" y="110" width="120" height="105" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
+        <text x="570" y="143" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
+        <text x="570" y="172" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
+        <text x="570" y="200" text-anchor="middle" font-size="11" fill="#6b7280">Frischwasserstation</text>
+        ${this._rohr("M610 110 V82", this._z(f.auslauf_soll), zapft, 7)}
+        <path d="M596 82 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
+        ${zapft ? `<path class="fluss" d="M624 98 V108" stroke="#4aa3ff" stroke-width="4"/>` : ""}
+        <text x="613" y="68" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
       </g>`;
     }
 
     /* Heizgruppen auf dem Verteilbalken: Vorlauf Mitte oben rechts, Rücklauf unten rechts, Reserveabgang */
     const hkFliesst = hk.some((h) => this._an(h.pumpe));
-    const yVb = 590;
-    const yRb = 618;
-    const xV0 = 790;
+    const yVb = 715;
+    const yRb = 743;
+    const xV0 = 640;
     const xReserve = hx(hk.length);
     const xV1 = xReserve + 30;
     s += `<g data-teil="verteiler">
-      ${this._rohr(`M${wandR(yMitteOben)} ${yMitteOben} H${xV0 - 20} V${yVb} H${xV1}`, pM, hkFliesst)}
-      ${this._rohr(`M${xV1} ${yRb} H${xV0 - 6} V${yRb} H612 V${yUnten} H${wandR(yUnten)}`, pU, hkFliesst)}
+      ${this._rohr(`M${X(wandR(yMitteOben))} ${Y(yMitteOben)} H${xV0 - 20} V${yVb} H${xV1}`, pM, hkFliesst)}
+      ${this._rohr(`M${xV1} ${yRb} H500 V${Y(yUnten)} H${X(wandR(yUnten))}`, pU, hkFliesst)}
       <rect class="rahmen" x="${xV0 - 4}" y="${yVb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
       <rect class="rahmen" x="${xV0 - 4}" y="${yRb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
       <text x="${xV0}" y="${yRb + 30}" font-size="12" fill="#6b7280">Verteilbalken</text>
     </g>`;
     s += `<g data-teil="reserve">
-      <path d="M${xReserve - 14} ${yVb} V540 M${xReserve + 14} ${yRb} V540" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
-      ${[xReserve - 14, xReserve + 14].map((x) => `<path d="M${x - 7} 552 l7 12 l7 -12 z M${x - 7} 576 l7 -12 l7 12 z" fill="#5b6470"/>`).join("")}
-      <text x="${xReserve}" y="528" text-anchor="middle" font-size="13" fill="#6b7280">Reserve</text>
+      <path d="M${xReserve - 14} ${yVb} V${yVb - 50} M${xReserve + 14} ${yRb} V${yVb - 50}" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
+      ${[xReserve - 14, xReserve + 14].map((x) => `<path d="M${x - 7} ${yVb - 38} l7 12 l7 -12 z M${x - 7} ${yVb - 14} l7 -12 l7 12 z" fill="#5b6470"/>`).join("")}
+      <text x="${xReserve}" y="${yVb - 62}" text-anchor="middle" font-size="13" fill="#6b7280">Reserve</text>
     </g>`;
     hk.forEach((h, i) => {
       const x = hx(i);
@@ -479,20 +488,19 @@ class HargassnerSchemaCard extends HTMLElement {
       const raum = this._z(h.raum);
       const nr = h.nummer ?? i + 1;
       s += `<g data-teil="hk${i}">
-        ${this._rohr(`M${x - 18} ${yVb} V160`, vl, an)}
-        ${this._rohr(`M${x + 18} 160 V${yRb}`, rlH, an)}
-        <path d="M${x - 18} 505 H${x + 18}" stroke="#8a9097" stroke-width="3" stroke-dasharray="4 3"/>
-        <path d="M${x - 31} 505 l13 -10 l13 10 z M${x - 31} 505 l13 10 l13 -10 z" fill="#b08d57"/>
-        ${this._pumpe(x - 18, 440, an, -90)}
-        <circle cx="${x - 18}" cy="385" r="5" fill="#fff" stroke="#3a4048" stroke-width="2"/>
-        <text x="${x - 38}" y="${445}" text-anchor="end" font-size="12" fill="#6b7280">P${nr}</text>
-        <text x="${x - 36}" y="${510}" text-anchor="end" font-size="12" fill="#6b7280">M${nr}</text>
-        <text x="${x - 28}" y="${382}" text-anchor="end" font-size="12" fill="#6b7280">VF${nr}</text>
-        <text x="${x - 28}" y="${398}" text-anchor="end" font-size="13" font-weight="600" fill="#22262b">${vl !== null ? komma(vl, 0) + "°" : ""}</text>
-        <path class="rahmen" d="M${x - 62} 160 V95 L${x} 50 L${x + 62} 95 V160 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
-        <rect x="${x - 13}" y="128" width="26" height="32" fill="#cdd3da"/>
-        <text x="${x}" y="90" text-anchor="middle" font-size="15" font-weight="600">${esc(h.titel || "Haus " + (i + 1))}</text>
-        <text x="${x}" y="113" text-anchor="middle" font-size="13" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : an ? "heizt" : "Pause"}</text>
+        ${this._rohr(`M${x - 18} ${yVb} V365`, vl, an)}
+        ${this._rohr(`M${x + 18} 365 V${yRb}`, rlH, an)}
+        <path d="M${x - 18} 635 H${x + 18}" stroke="#8a9097" stroke-width="3" stroke-dasharray="4 3"/>
+        <path d="M${x - 31} 635 l13 -10 l13 10 z M${x - 31} 635 l13 10 l13 -10 z" fill="#b08d57"/>
+        ${this._pumpe(x - 18, 570, an, -90)}
+        <circle cx="${x - 18}" cy="510" r="5" fill="#fff" stroke="#3a4048" stroke-width="2"/>
+        <text x="${x - 38}" y="575" text-anchor="end" font-size="12" fill="#6b7280">P${nr}</text>
+        <text x="${x - 36}" y="640" text-anchor="end" font-size="12" fill="#6b7280">M${nr}</text>
+        <text x="${x - 28}" y="507" text-anchor="end" font-size="12" fill="#6b7280">VF${nr}</text>
+        <text x="${x - 28}" y="523" text-anchor="end" font-size="13" font-weight="600" fill="#22262b">${vl !== null ? komma(vl, 0) + "°" : ""}</text>
+        <path class="rahmen" d="M${x - 55} 365 V300 L${x} 258 L${x + 55} 300 V365 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
+        <text x="${x}" y="325" text-anchor="middle" font-size="15" font-weight="600">${esc(h.titel || "Haus " + (i + 1))}</text>
+        <text x="${x}" y="347" text-anchor="middle" font-size="13" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : an ? "heizt" : "Pause"}</text>
       </g>`;
     });
     s += `</svg>`;
@@ -641,9 +649,9 @@ class HargassnerSchemaCard extends HTMLElement {
           <div class="rechts"><button class="knopf-klein" data-fach><ha-icon icon="mdi:tools"></ha-icon>Für Fachleute</button></div>
         </div>
         <div class="lage ${lage.art}"><ha-icon icon="${lage.icon}"></ha-icon><div>${esc(lage.text)}<small>${esc(lage.klein)}</small></div></div>
-        <div class="bild">
+        <div class="haupt"><div class="bild">
           <div class="rollen">${this._schema()}</div>
-          <div class="bildfuss"><span>Tippen Sie auf einen Teil der Heizung für eine Erklärung.${"ontouchstart" in window ? " Zum Verschieben wischen." : ""}</span>
+          <div class="bildfuss"><span>Tippen Sie auf einen Teil der Heizung für eine Erklärung.</span>
             <button class="knopf-klein" data-gross><ha-icon icon="mdi:magnify-plus-outline"></ha-icon>Grösser anzeigen</button></div></div>
         <div class="raster">
           ${(a.heizkreise || []).map((h, i) => this._feldHaus(h, i)).join("")}
@@ -651,7 +659,7 @@ class HargassnerSchemaCard extends HTMLElement {
           ${this._v.wartung_tage ? this._feldWartung() : ""}
           ${this._v.lager_rest ? this._feldLager() : ""}
           ${a.kessel ? this._feldKessel() : ""}
-        </div>
+        </div></div>
       </div>
       <div class="ueber ${ueberZu ? "zu" : ""}" id="ueber"><div class="fenster"><div class="fkopf"><span id="utitel">${esc(ueberTitel)}</span><button data-schliessen>Schliessen</button></div><div class="finhalt"></div></div></div>
       ${this._frage ? this._frageHtml() : ""}`;
