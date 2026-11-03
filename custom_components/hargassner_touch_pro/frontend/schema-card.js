@@ -299,14 +299,11 @@ class HargassnerSchemaCard extends HTMLElement {
     const breite = 1200;
     // Häuser verteilt rechts
     const n = Math.max(1, hk.length);
-    const hx = (i) => (n === 1 ? 1000 : 870 + (i * 240) / (n - 1));
+    // Häuser und Reserveabgang gleichmässig auf dem Verteilbalken
+    const schritt = Math.min(135, 280 / n);
+    const hx = (i) => 845 + i * schritt;
     let s = `<svg viewBox="0 0 ${breite} 660" role="img" aria-label="Heizung als Schema">
-      <defs>
-        <linearGradient id="speicher" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="${tempFarbe(pO)}"/><stop offset=".5" stop-color="${tempFarbe(pM)}"/><stop offset="1" stop-color="${tempFarbe(pU)}"/>
-        </linearGradient>
-        <clipPath id="speicherform"><rect x="420" y="210" width="140" height="350" rx="60"/></clipPath>
-      </defs>`;
+`;
 
     /* Holzschnitzel-Lager und Förderschnecke */
     s += `<g data-teil="lager">
@@ -338,84 +335,146 @@ class HargassnerSchemaCard extends HTMLElement {
       <rect x="72" y="282" width="20" height="18" fill="#6b7078"/>
     </g>`;
 
-    /* Leitungen Kessel ↔ Speicher (mit Rücklaufanhebung) */
-    s += `<g data-teil="kessel">${this._rohr("M230 330 H320 V240 H420", kT, laden)}${this._rohr("M420 535 H230", rl, laden)}${this._pumpe(300, 535, laden, 180)}</g>`;
+    /* Speicher-Geometrie: Anschlüsse in der Höhe wie im Prinzipschema
+       (Anteil der Speicherhöhe von oben: 7,5 % oben, 39 % Mitte oben, 49 % Solar ein, 62 % Mitte unten, 88 % Solar aus, 93 % unten) */
+    const PY = (f) => Math.round(210 + f * 350);
+    const yOben = PY(0.075);
+    const yMitteOben = PY(0.39);
+    const ySolarEin = PY(0.49);
+    const yMitteUnten = PY(0.64);
+    const ySolarAus = PY(0.875);
+    const yUnten = PY(0.93);
+    // Wandposition des Speichers (Rechteck 420–560 mit Radius 60 oben und unten)
+    const wandL = (y) => {
+      const dy = y < 270 ? 270 - y : y > 500 ? y - 500 : 0;
+      return dy ? Math.round(480 - Math.sqrt(Math.max(0, 3600 - dy * dy))) : 420;
+    };
+    const wandR = (y) => 980 - wandL(y);
 
-    /* Ausdehnungsgefäss */
+    /* Kessel ↔ Speicher: Vorlauf oben links, Rücklauf unten links (mit Rücklaufanhebung) */
+    s += `<g data-teil="kessel">${this._rohr(`M230 330 H320 V${yOben} H${wandL(yOben)}`, kT, laden)}${this._rohr(`M${wandL(yUnten)} ${yUnten} H230`, rl, laden)}${this._pumpe(290, yUnten, laden, 180)}</g>`;
+
+    /* Ausdehnungsgefäss am Anschluss Mitte links, mit Kappenventil */
     s += `<g data-teil="ae">
-      <path d="M320 535 V555" stroke="#8a9097" stroke-width="4"/>
-      <rect class="rahmen" x="300" y="555" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
+      <path d="M355 572 V${yMitteUnten} H${wandL(yMitteUnten)}" fill="none" stroke="#8a9097" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M375 ${yMitteUnten - 7} l12 7 l-12 7 z M399 ${yMitteUnten - 7} l-12 7 l12 7 z" fill="#5b6470"/>
+      <rect class="rahmen" x="335" y="572" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
     </g>`;
 
-    /* Solar: Kollektor und Wendel unten im Speicher (Anschlüsse links) */
+    /* Solar: Kollektor oben, Wendel unten im Speicher (Anschlüsse rechts) */
     const so = this._config.solar || null;
     const soAktiv = !!(so && (so.kollektor || so.pumpe));
     const soT = soAktiv ? this._z(so.kollektor) : null;
     const soPumpe = soAktiv && this._an(so.pumpe);
-    const soVl = soAktiv ? soT ?? pU : null;
     const solarRohr = (d, t) =>
       soAktiv ? this._rohr(d, t, soPumpe, 6) : `<path d="${d}" fill="none" stroke="#c3c8cf" stroke-width="5" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
     s += `<g data-teil="solar">
-      <path class="rahmen" d="M330 118 L362 52 L478 52 L446 118 Z" fill="${soAktiv ? "#1f3b63" : "#e6e9ed"}" stroke="${soAktiv ? "#0f2440" : "#b7bdc5"}" stroke-width="2"/>
-      ${[0, 1, 2, 3].map((i) => `<path d="M${351 + i * 29} 118 L${383 + i * 29} 52" stroke="${soAktiv ? "#4a6a96" : "#cfd4da"}" stroke-width="1.5"/>`).join("")}
-      <text x="400" y="40" text-anchor="middle" font-size="14" font-weight="600" fill="${soAktiv ? "#22262b" : "#8a9099"}">${soAktiv ? "Sonnenkollektor" + (soT !== null ? " " + komma(soT, 0) + " °C" : "") : "Solar (möglich)"}</text>
-      ${solarRohr("M372 118 V470 H420", soVl)}
-      ${solarRohr("M420 515 H398 V118", pU)}
-      ${soAktiv && so.pumpe ? this._pumpe(398, 420, soPumpe, -90) : ""}
+      <path class="rahmen" d="M548 118 L580 52 L672 52 L640 118 Z" fill="${soAktiv ? "#1f3b63" : "#e6e9ed"}" stroke="${soAktiv ? "#0f2440" : "#b7bdc5"}" stroke-width="2"/>
+      ${[0, 1, 2].map((i) => `<path d="M${571 + i * 23} 118 L${603 + i * 23} 52" stroke="${soAktiv ? "#4a6a96" : "#cfd4da"}" stroke-width="1.5"/>`).join("")}
+      <text x="610" y="40" text-anchor="middle" font-size="14" font-weight="600" fill="${soAktiv ? "#22262b" : "#8a9099"}">${soAktiv ? "Solar" + (soT !== null ? " " + komma(soT, 0) + " °C" : "") : "Solar (möglich)"}</text>
+      ${solarRohr(`M580 118 V${ySolarEin} H${wandR(ySolarEin)}`, soT ?? pU)}
+      ${solarRohr(`M${wandR(ySolarAus)} ${ySolarAus} H597 V118`, pU)}
+      ${soAktiv && so.pumpe ? this._pumpe(597, 300, soPumpe, -90) : ""}
     </g>`;
 
-    /* Wärmespeicher */
+    /* Wärmespeicher mit vier Fühlern, Solarwendel und Elektroeinsatz */
+    const fu = this._config.fuehler || {};
+    const fuehler = [
+      ["BF1", fu.BF1 ?? p.bf1, yOben],
+      ["PF1", fu.PF1 ?? p.oben, yMitteOben],
+      ["PF2", fu.PF2 ?? p.mitte, PY(0.62)],
+      ["PF3", fu.PF3 ?? p.unten, yUnten],
+    ];
+    const tf = fuehler.map(([, id]) => this._z(id));
+    const stopps = fuehler
+      .map(([, , y], i) => [(y - 210) / 350, tf[i]])
+      .filter(([, t]) => t !== null);
+    const elektro = this._config.elektro;
+    const eAn = elektro ? this._an(elektro) : false;
     const fuell = ladung === null ? 0 : Math.max(0, Math.min(100, ladung));
+    s += `<defs><linearGradient id="speicher" x1="0" y1="0" x2="0" y2="1">${
+      stopps.length ? stopps.map(([o, t]) => `<stop offset="${o.toFixed(3)}" stop-color="${tempFarbe(t)}"/>`).join("") : `<stop offset="0" stop-color="${tempFarbe(pO)}"/><stop offset="1" stop-color="${tempFarbe(pU)}"/>`
+    }</linearGradient><clipPath id="speicherform"><rect x="420" y="210" width="140" height="350" rx="60"/></clipPath></defs>`;
     s += `<g data-teil="puffer">
       <rect x="420" y="210" width="140" height="350" rx="60" fill="#e9ecef"/>
       <rect x="420" y="${560 - 3.5 * fuell}" width="140" height="${3.5 * fuell}" fill="url(#speicher)" clip-path="url(#speicherform)"/>
-      <path d="M420 470 h40 ${[0, 1, 2].map(() => "l20 9 l-20 9").join(" ")} h-40" fill="none" stroke="${soAktiv ? "#1f3b63" : "#b7bdc5"}" stroke-width="3" ${soAktiv ? "" : 'stroke-dasharray="5 4"'} opacity=".8"/>
+      <path d="M${wandR(ySolarEin)} ${ySolarEin} H540 ${[0, 1, 2, 3].map(() => "l-42 8 l42 8").join(" ")} V${ySolarAus} H${wandR(ySolarAus)}" fill="none" stroke="${soAktiv ? "#1f3b63" : "#9aa3ad"}" stroke-width="2.5" ${soAktiv ? "" : 'stroke-dasharray="5 4"'} opacity=".8"/>
+      <g data-teil="elektro">
+        <rect x="${wandL(388)}" y="384" width="${492 - wandL(388)}" height="8" rx="4" fill="${eAn ? "#ef4444" : "#8a9097"}"/>
+        <path d="M478 371 l-7 10 h6 l-5 10 l12 -13 h-6 l5 -7 z" fill="${eAn ? "#ef4444" : "#5b6470"}"/>
+        <text x="${wandL(388) + 4}" y="378" font-size="11" fill="#3a4048">${elektro ? (eAn ? "Elektro ein" : "Elektro 9 kW") : "Elektro 9 kW"}</text>
+      </g>
       <rect class="rahmen" x="420" y="210" width="140" height="350" rx="60" fill="none" stroke="#3a4048" stroke-width="3"/>
+      ${fuehler
+        .map(
+          ([name, id, y], i) => `<g data-teil="fuehler-${name}"><circle cx="${wandL(y) + 1}" cy="${y}" r="5" fill="#fff" stroke="#3a4048" stroke-width="2"/>
+        <text x="${wandL(y) + 9}" y="${y + (y < 300 ? 17 : -8)}" font-size="12" font-weight="600" fill="#22262b">${name}${tf[i] !== null ? " " + komma(tf[i], 0) + "°" : ""}</text></g>`
+        )
+        .join("")}
       <text x="490" y="196" text-anchor="middle" font-size="17" font-weight="600">Wärmespeicher</text>
-      <rect x="452" y="364" width="76" height="40" rx="8" fill="rgba(255,255,255,.88)"/>
-      <text x="490" y="392" text-anchor="middle" font-size="24" font-weight="700">${ladung === null ? "–" : Math.round(ladung) + " %"}</text>
-      <text x="490" y="262" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.oben))}</text>
-      <text x="490" y="545" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.unten))}</text>
+      <rect x="452" y="282" width="76" height="36" rx="8" fill="rgba(255,255,255,.88)"/>
+      <text x="490" y="308" text-anchor="middle" font-size="22" font-weight="700">${ladung === null ? "–" : Math.round(ladung) + " %"}</text>
     </g>`;
 
-    /* Warmwasser-Station */
+    /* Frischwasserstation: Vorlauf ganz oben rechts, Rücklauf Mitte unten rechts */
     if (f) {
       const fp = this._an(f.pumpe);
       const zapft = (this._z(f.durchfluss) ?? 0) > 0 || fp;
       s += `<g data-teil="warmwasser">
-        ${this._rohr("M545 232 H590 V200 H610", this._z(f.vorlauf) ?? pO, fp, 7)}
-        ${this._rohr("M655 250 V540 H558", pU, fp, 7)}
-        <rect class="rahmen" x="610" y="150" width="130" height="100" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
-        <text x="675" y="190" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
-        <text x="675" y="220" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
-        ${this._rohr("M715 150 V112", this._z(f.auslauf_soll), zapft, 7)}
-        <path d="M701 112 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
-        ${zapft ? `<path class="fluss" d="M729 128 V146" stroke="#4aa3ff" stroke-width="4"/>` : ""}
-        <text x="718" y="98" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
+        ${this._rohr(`M${wandR(yOben)} ${yOben} H678 V250`, this._z(f.vorlauf) ?? pO, fp, 7)}
+        ${this._rohr(`M${wandR(yMitteUnten)} ${yMitteUnten} H708 V250`, pU, fp, 7)}
+        <rect class="rahmen" x="630" y="140" width="120" height="110" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
+        <text x="690" y="176" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
+        <text x="690" y="206" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
+        <text x="690" y="236" text-anchor="middle" font-size="11" fill="#6b7280">Frischwasserstation</text>
+        ${this._rohr("M730 140 V108", this._z(f.auslauf_soll), zapft, 7)}
+        <path d="M716 108 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
+        ${zapft ? `<path class="fluss" d="M744 124 V138" stroke="#4aa3ff" stroke-width="4"/>` : ""}
+        <text x="733" y="94" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
       </g>`;
     }
 
-    /* Häuser mit Heizgruppen */
+    /* Heizgruppen auf dem Verteilbalken: Vorlauf Mitte oben rechts, Rücklauf unten rechts, Reserveabgang */
     const hkFliesst = hk.some((h) => this._an(h.pumpe));
-    const letzte = hx(hk.length - 1) + 20;
-    s += `<g data-teil="verteiler">${this._rohr(`M560 330 H${letzte - 40}`, pM, hkFliesst)}${this._rohr(`M${letzte} 610 H520 V552`, pU, hkFliesst)}</g>`;
+    const yVb = 590;
+    const yRb = 618;
+    const xV0 = 790;
+    const xReserve = hx(hk.length);
+    const xV1 = xReserve + 30;
+    s += `<g data-teil="verteiler">
+      ${this._rohr(`M${wandR(yMitteOben)} ${yMitteOben} H${xV0 - 20} V${yVb} H${xV1}`, pM, hkFliesst)}
+      ${this._rohr(`M${xV1} ${yRb} H${xV0 - 6} V${yRb} H612 V${yUnten} H${wandR(yUnten)}`, pU, hkFliesst)}
+      <rect class="rahmen" x="${xV0 - 4}" y="${yVb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
+      <rect class="rahmen" x="${xV0 - 4}" y="${yRb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
+      <text x="${xV0}" y="${yRb + 30}" font-size="12" fill="#6b7280">Verteilbalken</text>
+    </g>`;
+    s += `<g data-teil="reserve">
+      <path d="M${xReserve - 14} ${yVb} V540 M${xReserve + 14} ${yRb} V540" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
+      ${[xReserve - 14, xReserve + 14].map((x) => `<path d="M${x - 7} 552 l7 12 l7 -12 z M${x - 7} 576 l7 -12 l7 12 z" fill="#5b6470"/>`).join("")}
+      <text x="${xReserve}" y="528" text-anchor="middle" font-size="13" fill="#6b7280">Reserve</text>
+    </g>`;
     hk.forEach((h, i) => {
       const x = hx(i);
       const an = this._an(h.pumpe);
       const vl = this._z(h.vorlauf);
       const rlH = vl === null ? pU : Math.max(pU ?? 0, vl - 8);
       const raum = this._z(h.raum);
+      const nr = h.nummer ?? i + 1;
       s += `<g data-teil="hk${i}">
-        ${this._rohr(`M${x - 20} 330 V160`, vl, an)}
-        ${this._rohr(`M${x + 20} 160 V610`, rlH, an)}
-        <path d="M${x - 33} 280 l13 -10 l13 10 z M${x - 33} 280 l13 10 l13 -10 z" fill="#b08d57"/>
-        ${this._pumpe(x - 20, 215, an, -90)}
-        <path class="rahmen" d="M${x - 75} 160 V95 L${x} 45 L${x + 75} 95 V160 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
-        <rect x="${x - 15}" y="125" width="30" height="35" fill="#cdd3da"/>
-        <text x="${x}" y="88" text-anchor="middle" font-size="16" font-weight="600">${esc(h.titel || "Haus " + (i + 1))}</text>
-        <text x="${x}" y="112" text-anchor="middle" font-size="14" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : esc(this._roh(h.zustand) || "")}</text>
-        <text x="${x - 42}" y="210" text-anchor="end" font-size="13" fill="#6b7280">${an ? "heizt" : "Pause"}</text>
-        <text x="${x - 42}" y="228" text-anchor="end" font-size="13" fill="#6b7280">${vl !== null ? komma(vl, 0) + " °C" : ""}</text>
+        ${this._rohr(`M${x - 18} ${yVb} V160`, vl, an)}
+        ${this._rohr(`M${x + 18} 160 V${yRb}`, rlH, an)}
+        <path d="M${x - 18} 505 H${x + 18}" stroke="#8a9097" stroke-width="3" stroke-dasharray="4 3"/>
+        <path d="M${x - 31} 505 l13 -10 l13 10 z M${x - 31} 505 l13 10 l13 -10 z" fill="#b08d57"/>
+        ${this._pumpe(x - 18, 440, an, -90)}
+        <circle cx="${x - 18}" cy="385" r="5" fill="#fff" stroke="#3a4048" stroke-width="2"/>
+        <text x="${x - 38}" y="${445}" text-anchor="end" font-size="12" fill="#6b7280">P${nr}</text>
+        <text x="${x - 36}" y="${510}" text-anchor="end" font-size="12" fill="#6b7280">M${nr}</text>
+        <text x="${x - 28}" y="${382}" text-anchor="end" font-size="12" fill="#6b7280">VF${nr}</text>
+        <text x="${x - 28}" y="${398}" text-anchor="end" font-size="13" font-weight="600" fill="#22262b">${vl !== null ? komma(vl, 0) + "°" : ""}</text>
+        <path class="rahmen" d="M${x - 62} 160 V95 L${x} 50 L${x + 62} 95 V160 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
+        <rect x="${x - 13}" y="128" width="26" height="32" fill="#cdd3da"/>
+        <text x="${x}" y="90" text-anchor="middle" font-size="15" font-weight="600">${esc(h.titel || "Haus " + (i + 1))}</text>
+        <text x="${x}" y="113" text-anchor="middle" font-size="13" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : an ? "heizt" : "Pause"}</text>
       </g>`;
     });
     s += `</svg>`;
@@ -594,7 +653,6 @@ class HargassnerSchemaCard extends HTMLElement {
     const texte = {
       lager: ["Holzschnitzel-Lager", `Hier lagern die Holzschnitzel. Ein Rührwerk am Boden und eine Förderschnecke bringen sie automatisch zum Kessel, sobald er brennt.${this._z(this._v.lager_rest) !== null ? ` Geschätzt sind noch etwa ${komma(this._z(this._v.lager_rest), 0)} m³ im Lager, das reicht ${this._tageText(this._z(this._v.lager_reichweite)).replace("in ca. ", "ca. ")}.` : ""}`],
       kessel: ["Holzkessel", `Der Kessel verbrennt die Holzschnitzel und erwärmt damit Wasser. Dieses warme Wasser fliesst in den Wärmespeicher. Er startet und stoppt von selbst. Zurzeit: ${(this._z(k.leistung) ?? 0) > 0 ? "er brennt" : "er ruht"}, Temperatur ${this._grad(k.temperatur)}.`],
-      ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden."],
       puffer: ["Wärmespeicher", `Ein grosser, gut isolierter Wassertank. Er speichert die Wärme vom Kessel, damit die Häuser und das Warmwasser auch dann warm bleiben, wenn der Kessel ruht. Der Kessel füllt ihn von oben mit heissem Wasser. Das Warmwasser nimmt ganz oben das heisseste Wasser, die Häuser etwas tiefer. Abgekühltes Wasser kommt unten zurück. Oben ist das Wasser am heissesten (${this._grad(p.oben)}), unten am kühlsten (${this._grad(p.unten)}). Gefüllt: ${this._z(p.ladung) === null ? "–" : Math.round(this._z(p.ladung)) + " %"}.`],
       warmwasser: ["Warmwasser-Station", "Erwärmt das Trinkwasser frisch, genau dann, wenn ein Wasserhahn aufgedreht wird. Die Wärme kommt aus dem Wärmespeicher. Es wird also kein Warmwasser auf Vorrat gehalten."],
       verteiler: ["Leitungen zu den Häusern", "Warmes Wasser fliesst vom Wärmespeicher zu den Häusern, gibt dort in den Heizkörpern Wärme ab und kommt abgekühlt zurück. Die Farbe zeigt die Temperatur: rot heiss, gelb warm, grün lauwarm, blau kühl. Wandernde Striche bedeuten, dass gerade Wasser fliesst."],
@@ -604,8 +662,16 @@ class HargassnerSchemaCard extends HTMLElement {
           ? "Auf dem Dach erwärmt die Sonne eine Flüssigkeit. Die Solarpumpe schickt sie durch die Wendel unten im Wärmespeicher. So hilft die Sonne mit, und der Holzkessel muss seltener brennen."
           : "Der Wärmespeicher hat unten eine Wendel für Sonnenkollektoren. Sie ist vorbereitet, aber zurzeit nicht angeschlossen. Mit Kollektoren auf dem Dach könnte die Sonne im Sommer das Warmwasser und in der Übergangszeit einen Teil der Heizwärme liefern.",
       ],
+      elektro: ["Elektroeinsatz", "Ein elektrischer Heizstab mit 9 kW im Wärmespeicher. Er ist eine Notlösung, wenn der Holzkessel nicht laufen kann, zum Beispiel bei einer Störung. Strom ist teurer als Holz, darum wird er normalerweise nicht gebraucht."],
+      reserve: ["Reserveabgang", "Ein freier Anschluss am Verteilbalken, abgesperrt mit zwei Ventilen. Hier kann später ein weiterer Heizkreis angeschlossen werden."],
+      ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss am Wärmespeicher fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden. Das Ventil davor bleibt immer offen."],
       aussen: ["Aussentemperatur", "Die Heizung misst die Temperatur draussen. Je kälter es ist, desto wärmer schickt sie das Wasser zu den Häusern."],
     };
+    if (teil.startsWith("fuehler-")) {
+      const name = teil.slice(8);
+      const lage = { BF1: "ganz oben, auf der Höhe des Kesselvorlaufs und der Warmwasser-Station", PF1: "oben, auf der Höhe des Abgangs zu den Häusern", PF2: "in der Mitte", PF3: "unten, wo das abgekühlte Wasser zurückkommt" }[name];
+      texte[teil] = [`Speicherfühler ${name}`, `Dieser Fühler misst die Wassertemperatur ${lage}. Aus den vier Fühlern berechnet die Heizung, wie voll der Wärmespeicher ist und wann der Holzkessel starten soll.`];
+    }
     let t = texte[teil];
     if (!t && teil.startsWith("hk")) {
       const h = a.heizkreise?.[+teil.slice(2)] || {};
