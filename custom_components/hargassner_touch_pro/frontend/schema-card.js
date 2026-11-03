@@ -78,6 +78,13 @@ const STIL = `
 .lage small { display:block; font-size:13.5px; opacity:.85; margin-top:2px; }
 .bild { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); padding:6px; margin-bottom:14px; position:relative; }
 .bild svg { width:100%; height:auto; display:block; }
+.bild .rollen { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.bildfuss { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:4px 8px 4px; font-size:12px; color:#8a9099; }
+.vollbild { overflow:auto; background:#fff; font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; color:#22262b; touch-action:pan-x pan-y pinch-zoom; }
+.vollbild svg { width:1500px; max-width:none; height:auto; display:block; }
+@media (max-width: 700px) {
+  .bild .rollen svg { width:900px; max-width:none; }
+}
 .bild .hinweis { position:absolute; left:14px; bottom:10px; font-size:12px; color:#8a9099; }
 [data-teil] { cursor:pointer; }
 [data-teil]:hover .rahmen { stroke:#2b7bd6; stroke-width:3; }
@@ -332,12 +339,29 @@ class HargassnerSchemaCard extends HTMLElement {
     </g>`;
 
     /* Leitungen Kessel ↔ Speicher (mit Rücklaufanhebung) */
-    s += `<g data-teil="kessel">${this._rohr("M230 330 H330 V250 H420", kT, laden)}${this._rohr("M420 530 H230", rl, laden)}${this._pumpe(300, 530, laden, 180)}</g>`;
+    s += `<g data-teil="kessel">${this._rohr("M230 330 H320 V240 H420", kT, laden)}${this._rohr("M420 535 H230", rl, laden)}${this._pumpe(300, 535, laden, 180)}</g>`;
 
     /* Ausdehnungsgefäss */
     s += `<g data-teil="ae">
-      <path d="M320 530 V555" stroke="#8a9097" stroke-width="4"/>
+      <path d="M320 535 V555" stroke="#8a9097" stroke-width="4"/>
       <rect class="rahmen" x="300" y="555" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
+    </g>`;
+
+    /* Solar: Kollektor und Wendel unten im Speicher (Anschlüsse links) */
+    const so = this._config.solar || null;
+    const soAktiv = !!(so && (so.kollektor || so.pumpe));
+    const soT = soAktiv ? this._z(so.kollektor) : null;
+    const soPumpe = soAktiv && this._an(so.pumpe);
+    const soVl = soAktiv ? soT ?? pU : null;
+    const solarRohr = (d, t) =>
+      soAktiv ? this._rohr(d, t, soPumpe, 6) : `<path d="${d}" fill="none" stroke="#c3c8cf" stroke-width="5" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s += `<g data-teil="solar">
+      <path class="rahmen" d="M330 118 L362 52 L478 52 L446 118 Z" fill="${soAktiv ? "#1f3b63" : "#e6e9ed"}" stroke="${soAktiv ? "#0f2440" : "#b7bdc5"}" stroke-width="2"/>
+      ${[0, 1, 2, 3].map((i) => `<path d="M${351 + i * 29} 118 L${383 + i * 29} 52" stroke="${soAktiv ? "#4a6a96" : "#cfd4da"}" stroke-width="1.5"/>`).join("")}
+      <text x="400" y="40" text-anchor="middle" font-size="14" font-weight="600" fill="${soAktiv ? "#22262b" : "#8a9099"}">${soAktiv ? "Sonnenkollektor" + (soT !== null ? " " + komma(soT, 0) + " °C" : "") : "Solar (möglich)"}</text>
+      ${solarRohr("M372 118 V470 H420", soVl)}
+      ${solarRohr("M420 515 H398 V118", pU)}
+      ${soAktiv && so.pumpe ? this._pumpe(398, 420, soPumpe, -90) : ""}
     </g>`;
 
     /* Wärmespeicher */
@@ -345,12 +369,13 @@ class HargassnerSchemaCard extends HTMLElement {
     s += `<g data-teil="puffer">
       <rect x="420" y="210" width="140" height="350" rx="60" fill="#e9ecef"/>
       <rect x="420" y="${560 - 3.5 * fuell}" width="140" height="${3.5 * fuell}" fill="url(#speicher)" clip-path="url(#speicherform)"/>
+      <path d="M420 470 h40 ${[0, 1, 2].map(() => "l20 9 l-20 9").join(" ")} h-40" fill="none" stroke="${soAktiv ? "#1f3b63" : "#b7bdc5"}" stroke-width="3" ${soAktiv ? "" : 'stroke-dasharray="5 4"'} opacity=".8"/>
       <rect class="rahmen" x="420" y="210" width="140" height="350" rx="60" fill="none" stroke="#3a4048" stroke-width="3"/>
-      <text x="490" y="190" text-anchor="middle" font-size="17" font-weight="600">Wärmespeicher</text>
+      <text x="490" y="196" text-anchor="middle" font-size="17" font-weight="600">Wärmespeicher</text>
       <rect x="452" y="364" width="76" height="40" rx="8" fill="rgba(255,255,255,.88)"/>
       <text x="490" y="392" text-anchor="middle" font-size="24" font-weight="700">${ladung === null ? "–" : Math.round(ladung) + " %"}</text>
-      <text x="490" y="250" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.oben))}</text>
-      <text x="490" y="540" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.unten))}</text>
+      <text x="490" y="262" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.oben))}</text>
+      <text x="490" y="545" text-anchor="middle" font-size="14" font-weight="600" fill="#22262b">${esc(this._grad(p.unten))}</text>
     </g>`;
 
     /* Warmwasser-Station */
@@ -358,8 +383,8 @@ class HargassnerSchemaCard extends HTMLElement {
       const fp = this._an(f.pumpe);
       const zapft = (this._z(f.durchfluss) ?? 0) > 0 || fp;
       s += `<g data-teil="warmwasser">
-        ${this._rohr("M560 380 H610 V480 H640", this._z(f.vorlauf) ?? pO, fp, 7)}
-        ${this._rohr("M640 540 H560", pU, fp, 7)}
+        ${this._rohr("M545 232 H625 V480 H640", this._z(f.vorlauf) ?? pO, fp, 7)}
+        ${this._rohr("M640 540 H558", pU, fp, 7)}
         <rect class="rahmen" x="640" y="460" width="130" height="100" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
         <text x="705" y="500" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
         <text x="705" y="530" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
@@ -373,7 +398,7 @@ class HargassnerSchemaCard extends HTMLElement {
     /* Häuser mit Heizgruppen */
     const hkFliesst = hk.some((h) => this._an(h.pumpe));
     const letzte = hx(hk.length - 1) + 20;
-    s += `<g data-teil="verteiler">${this._rohr(`M560 290 H${letzte - 40}`, pM, hkFliesst)}${this._rohr(`M${letzte} 610 H520 V552`, pU, hkFliesst)}</g>`;
+    s += `<g data-teil="verteiler">${this._rohr(`M560 330 H${letzte - 40}`, pM, hkFliesst)}${this._rohr(`M${letzte} 610 H520 V552`, pU, hkFliesst)}</g>`;
     hk.forEach((h, i) => {
       const x = hx(i);
       const an = this._an(h.pumpe);
@@ -381,9 +406,9 @@ class HargassnerSchemaCard extends HTMLElement {
       const rlH = vl === null ? pU : Math.max(pU ?? 0, vl - 8);
       const raum = this._z(h.raum);
       s += `<g data-teil="hk${i}">
-        ${this._rohr(`M${x - 20} 290 V160`, vl, an)}
+        ${this._rohr(`M${x - 20} 330 V160`, vl, an)}
         ${this._rohr(`M${x + 20} 160 V610`, rlH, an)}
-        <path d="M${x - 33} 262 l13 -10 l13 10 z M${x - 33} 262 l13 10 l13 -10 z" fill="#b08d57"/>
+        <path d="M${x - 33} 280 l13 -10 l13 10 z M${x - 33} 280 l13 10 l13 -10 z" fill="#b08d57"/>
         ${this._pumpe(x - 20, 215, an, -90)}
         <path class="rahmen" d="M${x - 75} 160 V95 L${x} 45 L${x + 75} 95 V160 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
         <rect x="${x - 15}" y="125" width="30" height="35" fill="#cdd3da"/>
@@ -539,7 +564,10 @@ class HargassnerSchemaCard extends HTMLElement {
           <div class="rechts"><button class="knopf-klein" data-fach><ha-icon icon="mdi:tools"></ha-icon>Für Fachleute</button></div>
         </div>
         <div class="lage ${lage.art}"><ha-icon icon="${lage.icon}"></ha-icon><div>${esc(lage.text)}<small>${esc(lage.klein)}</small></div></div>
-        <div class="bild">${this._schema()}<div class="hinweis">Tippen Sie auf einen Teil der Heizung für eine Erklärung.</div></div>
+        <div class="bild">
+          <div class="rollen">${this._schema()}</div>
+          <div class="bildfuss"><span>Tippen Sie auf einen Teil der Heizung für eine Erklärung.${"ontouchstart" in window ? " Zum Verschieben wischen." : ""}</span>
+            <button class="knopf-klein" data-gross><ha-icon icon="mdi:magnify-plus-outline"></ha-icon>Grösser anzeigen</button></div></div>
         <div class="raster">
           ${(a.heizkreise || []).map((h, i) => this._feldHaus(h, i)).join("")}
           ${a.frischwasser?.[0] ? this._feldWarmwasser(a.frischwasser[0]) : ""}
@@ -567,9 +595,15 @@ class HargassnerSchemaCard extends HTMLElement {
       lager: ["Holzschnitzel-Lager", `Hier lagern die Holzschnitzel. Ein Rührwerk am Boden und eine Förderschnecke bringen sie automatisch zum Kessel, sobald er brennt.${this._z(this._v.lager_rest) !== null ? ` Geschätzt sind noch etwa ${komma(this._z(this._v.lager_rest), 0)} m³ im Lager, das reicht ${this._tageText(this._z(this._v.lager_reichweite)).replace("in ca. ", "ca. ")}.` : ""}`],
       kessel: ["Holzkessel", `Der Kessel verbrennt die Holzschnitzel und erwärmt damit Wasser. Dieses warme Wasser fliesst in den Wärmespeicher. Er startet und stoppt von selbst. Zurzeit: ${(this._z(k.leistung) ?? 0) > 0 ? "er brennt" : "er ruht"}, Temperatur ${this._grad(k.temperatur)}.`],
       ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden."],
-      puffer: ["Wärmespeicher", `Ein grosser, gut isolierter Wassertank. Er speichert die Wärme vom Kessel, damit die Häuser und das Warmwasser auch dann warm bleiben, wenn der Kessel ruht. Oben ist das Wasser am heissesten (${this._grad(p.oben)}), unten am kühlsten (${this._grad(p.unten)}). Gefüllt: ${this._z(p.ladung) === null ? "–" : Math.round(this._z(p.ladung)) + " %"}.`],
+      puffer: ["Wärmespeicher", `Ein grosser, gut isolierter Wassertank. Er speichert die Wärme vom Kessel, damit die Häuser und das Warmwasser auch dann warm bleiben, wenn der Kessel ruht. Der Kessel füllt ihn von oben mit heissem Wasser. Das Warmwasser nimmt ganz oben das heisseste Wasser, die Häuser etwas tiefer. Abgekühltes Wasser kommt unten zurück. Oben ist das Wasser am heissesten (${this._grad(p.oben)}), unten am kühlsten (${this._grad(p.unten)}). Gefüllt: ${this._z(p.ladung) === null ? "–" : Math.round(this._z(p.ladung)) + " %"}.`],
       warmwasser: ["Warmwasser-Station", "Erwärmt das Trinkwasser frisch, genau dann, wenn ein Wasserhahn aufgedreht wird. Die Wärme kommt aus dem Wärmespeicher. Es wird also kein Warmwasser auf Vorrat gehalten."],
       verteiler: ["Leitungen zu den Häusern", "Warmes Wasser fliesst vom Wärmespeicher zu den Häusern, gibt dort in den Heizkörpern Wärme ab und kommt abgekühlt zurück. Die Farbe zeigt die Temperatur: rot heiss, gelb warm, grün lauwarm, blau kühl. Wandernde Striche bedeuten, dass gerade Wasser fliesst."],
+      solar: [
+        "Sonnenkollektor",
+        (this._config.solar && (this._config.solar.kollektor || this._config.solar.pumpe))
+          ? "Auf dem Dach erwärmt die Sonne eine Flüssigkeit. Die Solarpumpe schickt sie durch die Wendel unten im Wärmespeicher. So hilft die Sonne mit, und der Holzkessel muss seltener brennen."
+          : "Der Wärmespeicher hat unten eine Wendel für Sonnenkollektoren. Sie ist vorbereitet, aber zurzeit nicht angeschlossen. Mit Kollektoren auf dem Dach könnte die Sonne im Sommer das Warmwasser und in der Übergangszeit einen Teil der Heizwärme liefern.",
+      ],
       aussen: ["Aussentemperatur", "Die Heizung misst die Temperatur draussen. Je kälter es ist, desto wärmer schickt sie das Wasser zu den Häusern."],
     };
     let t = texte[teil];
@@ -614,7 +648,7 @@ class HargassnerSchemaCard extends HTMLElement {
   }
 
   _klick(e) {
-    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil],[data-asche],[data-lager],[data-voll]");
+    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil],[data-asche],[data-lager],[data-voll],[data-gross]");
     if (!el) return;
     const d = el.dataset;
     if (d.frage) {
@@ -622,6 +656,12 @@ class HargassnerSchemaCard extends HTMLElement {
       this._frage = null;
       if (d.frage === "ja" && q) q.aktion(this.shadowRoot.querySelector(".bestaetigen"));
       this._zeichnen();
+    } else if (d.gross !== undefined) {
+      const el2 = document.createElement("div");
+      el2.className = "vollbild";
+      el2.innerHTML = this._schema();
+      this._ueberOeffnen("Schema", el2);
+      requestAnimationFrame(() => (el2.scrollLeft = 0));
     } else if (d.voll !== undefined) {
       this.shadowRoot.querySelectorAll("[data-voll]").forEach((b) => b.classList.toggle("an", b === el));
     } else if (d.asche !== undefined) {
