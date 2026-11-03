@@ -374,8 +374,8 @@ class HargassnerSchemaCard extends HTMLElement {
     const rlMitteWeg = `M${X(wandL(yMitteUnten))} ${Y(yMitteUnten)} H255 V${Y(yUnten)}`;
     s += `<g data-teil="kessel">
       ${this._rohr(`M180 326 H240 V${Y(yOben)} H${X(wandL(yOben))}`, kT, laden)}
-      ${this._rohr(`M255 ${Y(yUnten)} H180`, rl, laden)}
-      ${this._pumpe(206, Y(yUnten), laden, 180)}
+      ${this._rohr(`M255 ${Y(yUnten)} H198 V505 H180`, rl, laden)}
+      ${this._pumpe(198, 532, laden, -90)}
     </g>
     <g data-teil="umschaltung">
       ${rlMitte ? grau(rlUnten) + this._rohr(rlMitteWeg, rl, laden) : this._rohr(rlUnten, rl, laden) + grau(rlMitteWeg)}
@@ -443,7 +443,11 @@ class HargassnerSchemaCard extends HTMLElement {
       <text x="490" y="308" text-anchor="middle" font-size="22" font-weight="700">${ladung === null ? "–" : Math.round(ladung) + " %"}</text>
     </g></g>`;
 
-    /* Frischwasserstation: Vorlauf ganz oben rechts, Rücklauf Mitte unten rechts */
+    /* Frischwasserstation: Vorlauf ganz oben rechts, Rücklauf Mitte unten rechts, Warmwasser ins versorgte Haus */
+    const wwIndex = f ? hk.findIndex((h) => f.name && String(h.titel || "").includes(f.name)) : -1;
+    const wwHaus = f && hk.length ? hk[wwIndex === -1 ? hk.length - 1 : wwIndex] : null;
+    let wwImHaus = "";
+    const xWw = wwHaus ? hx(hk.indexOf(wwHaus)) + 34 : 610;
     if (f) {
       const fp = this._an(f.pumpe);
       const zapft = (this._z(f.durchfluss) ?? 0) > 0 || fp;
@@ -453,12 +457,14 @@ class HargassnerSchemaCard extends HTMLElement {
         <rect class="rahmen" x="510" y="110" width="120" height="105" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
         <text x="570" y="143" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
         <text x="570" y="172" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
-        <text x="570" y="200" text-anchor="middle" font-size="11" fill="#6b7280">Frischwasserstation</text>
-        ${this._rohr("M610 110 V82", this._z(f.auslauf_soll), zapft, 7)}
-        <path d="M596 82 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
-        ${zapft ? `<path class="fluss" d="M624 98 V108" stroke="#4aa3ff" stroke-width="4"/>` : ""}
-        <text x="613" y="68" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
+        <text x="570" y="200" text-anchor="middle" font-size="11" fill="#6b7280">${esc(wwHaus ? "für " + (wwHaus.titel || "") : "Frischwasserstation")}</text>
+        ${this._rohr(`M630 140 H${xWw} V312`, this._z(f.auslauf_soll), zapft, 6)}
+        <text x="${xWw}" y="132" text-anchor="middle" font-size="12" fill="#6b7280">Warmwasser zum Haus</text>
       </g>`;
+      // Leitung und Wasserhahn im Haus erst nach den Häusern zeichnen, damit sie sichtbar bleiben
+      wwImHaus = `<g data-teil="warmwasser">${this._rohr(`M${xWw} 282 V312`, this._z(f.auslauf_soll), zapft, 6)}
+        <path d="M${xWw - 14} 312 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
+        ${zapft ? `<path class="fluss" d="M${xWw + 14} 328 V342" stroke="#4aa3ff" stroke-width="4"/>` : ""}</g>`;
     }
 
     /* Heizgruppen auf dem Verteilbalken: Vorlauf Mitte oben rechts, Rücklauf unten rechts, Reserveabgang */
@@ -503,7 +509,7 @@ class HargassnerSchemaCard extends HTMLElement {
         <text x="${x}" y="347" text-anchor="middle" font-size="13" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : an ? "heizt" : "Pause"}</text>
       </g>`;
     });
-    s += `</svg>`;
+    s += wwImHaus + `</svg>`;
     return s;
   }
 
