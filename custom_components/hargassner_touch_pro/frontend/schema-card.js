@@ -383,15 +383,15 @@ class HargassnerSchemaCard extends HTMLElement {
       const fp = this._an(f.pumpe);
       const zapft = (this._z(f.durchfluss) ?? 0) > 0 || fp;
       s += `<g data-teil="warmwasser">
-        ${this._rohr("M545 232 H625 V480 H640", this._z(f.vorlauf) ?? pO, fp, 7)}
-        ${this._rohr("M640 540 H558", pU, fp, 7)}
-        <rect class="rahmen" x="640" y="460" width="130" height="100" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
-        <text x="705" y="500" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
-        <text x="705" y="530" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
-        ${this._rohr("M770 490 H820 V440", this._z(f.auslauf_soll), zapft, 7)}
-        <path d="M806 440 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
-        ${zapft ? `<path class="fluss" d="M834 456 V478" stroke="#4aa3ff" stroke-width="4"/>` : ""}
-        <text x="830" y="425" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
+        ${this._rohr("M545 232 H590 V200 H610", this._z(f.vorlauf) ?? pO, fp, 7)}
+        ${this._rohr("M655 250 V540 H558", pU, fp, 7)}
+        <rect class="rahmen" x="610" y="150" width="130" height="100" rx="10" fill="#f8fafc" stroke="#3a4048" stroke-width="2"/>
+        <text x="675" y="190" text-anchor="middle" font-size="15" font-weight="600">Warmwasser</text>
+        <text x="675" y="220" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
+        ${this._rohr("M715 150 V112", this._z(f.auslauf_soll), zapft, 7)}
+        <path d="M701 112 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
+        ${zapft ? `<path class="fluss" d="M729 128 V146" stroke="#4aa3ff" stroke-width="4"/>` : ""}
+        <text x="718" y="98" text-anchor="middle" font-size="13" fill="#6b7280">Wasserhahn</text>
       </g>`;
     }
 
