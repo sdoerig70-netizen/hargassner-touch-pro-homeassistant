@@ -351,14 +351,32 @@ class HargassnerSchemaCard extends HTMLElement {
     };
     const wandR = (y) => 980 - wandL(y);
 
-    /* Kessel ↔ Speicher: Vorlauf oben links, Rücklauf unten links (mit Rücklaufanhebung) */
-    s += `<g data-teil="kessel">${this._rohr(`M230 330 H320 V${yOben} H${wandL(yOben)}`, kT, laden)}${this._rohr(`M${wandL(yUnten)} ${yUnten} H230`, rl, laden)}${this._pumpe(290, yUnten, laden, 180)}</g>`;
-
-    /* Ausdehnungsgefäss am Anschluss Mitte links, mit Kappenventil */
+    /* Kessel ↔ Speicher: Vorlauf oben links. Rücklauf über Kugelhähne wahlweise unten (Normalbetrieb)
+       oder Mitte (bei Solar), Ausdehnungsgefäss am Kesselrücklauf */
+    const rlMitte = this._config.ruecklauf_anschluss === "mitte";
+    const kugelhahn = (x, y, offen, senkrecht) => {
+      const d = senkrecht
+        ? `M${x - 8} ${y - 12} L${x + 8} ${y - 12} L${x - 8} ${y + 12} L${x + 8} ${y + 12} Z`
+        : `M${x - 12} ${y - 8} L${x - 12} ${y + 8} L${x + 12} ${y - 8} L${x + 12} ${y + 8} Z`;
+      return `<path d="${d}" fill="${offen ? "#fff" : "#3a4048"}" stroke="#3a4048" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="${x}" cy="${y}" r="3.5" fill="${offen ? "#3a4048" : "#fff"}"/>`;
+    };
+    const grau = (d) => `<path d="${d}" fill="none" stroke="#b7bdc5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const rlUnten = `M${wandL(yUnten)} ${yUnten} H370`;
+    const rlMitteWeg = `M${wandL(yMitteUnten)} ${yMitteUnten} H370 V${yUnten}`;
+    s += `<g data-teil="kessel">
+      ${this._rohr(`M230 330 H320 V${yOben} H${wandL(yOben)}`, kT, laden)}
+      ${this._rohr(`M370 ${yUnten} H230`, rl, laden)}
+      ${this._pumpe(290, yUnten, laden, 180)}
+    </g>
+    <g data-teil="umschaltung">
+      ${rlMitte ? grau(rlUnten) + this._rohr(rlMitteWeg, rl, laden) : this._rohr(rlUnten, rl, laden) + grau(rlMitteWeg)}
+      ${kugelhahn(398, yUnten, !rlMitte, false)}
+      ${kugelhahn(398, yMitteUnten, rlMitte, false)}
+    </g>`;
     s += `<g data-teil="ae">
-      <path d="M355 572 V${yMitteUnten} H${wandL(yMitteUnten)}" fill="none" stroke="#8a9097" stroke-width="5" stroke-linejoin="round"/>
-      <path d="M375 ${yMitteUnten - 7} l12 7 l-12 7 z M399 ${yMitteUnten - 7} l-12 7 l12 7 z" fill="#5b6470"/>
-      <rect class="rahmen" x="335" y="572" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
+      <path d="M335 ${yUnten} V572" stroke="#8a9097" stroke-width="5"/>
+      <rect class="rahmen" x="315" y="572" width="40" height="70" rx="18" fill="#c0262c" stroke="#7a1015" stroke-width="2"/>
     </g>`;
 
     /* Solar: Kollektor oben, Wendel unten im Speicher (Anschlüsse rechts) */
@@ -664,7 +682,13 @@ class HargassnerSchemaCard extends HTMLElement {
       ],
       elektro: ["Elektroeinsatz", "Ein elektrischer Heizstab mit 9 kW im Wärmespeicher. Er ist eine Notlösung, wenn der Holzkessel nicht laufen kann, zum Beispiel bei einer Störung. Strom ist teurer als Holz, darum wird er normalerweise nicht gebraucht."],
       reserve: ["Reserveabgang", "Ein freier Anschluss am Verteilbalken, abgesperrt mit zwei Ventilen. Hier kann später ein weiterer Heizkreis angeschlossen werden."],
-      ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss am Wärmespeicher fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden. Das Ventil davor bleibt immer offen."],
+      ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss am Rücklauf zum Kessel fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden."],
+      umschaltung: [
+        "Rücklauf zum Kessel",
+        this._config.ruecklauf_anschluss === "mitte"
+          ? "Das abgekühlte Wasser für den Kessel wird zurzeit in der Mitte des Wärmespeichers entnommen. So bleibt der untere Teil kühl für die Sonnenwärme. Die Kugelhähne dafür sitzen links am Speicher."
+          : "Das abgekühlte Wasser für den Kessel kommt unten aus dem Wärmespeicher (Kugelhahn offen). Der zweite Anschluss in der Mitte ist mit einem Kugelhahn abgesperrt (grau). Kommt später Solar dazu, wird umgestellt: Mitte öffnen, unten schliessen. Dann bleibt der untere Teil des Speichers kühl für die Sonnenwärme.",
+      ],
       aussen: ["Aussentemperatur", "Die Heizung misst die Temperatur draussen. Je kälter es ist, desto wärmer schickt sie das Wasser zu den Häusern."],
     };
     if (teil.startsWith("fuehler-")) {
