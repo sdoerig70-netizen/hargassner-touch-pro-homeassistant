@@ -92,6 +92,8 @@ const STIL = `
 .bild svg { max-height:calc(100vh - 80px); }
 .bild .lupe { position:absolute; right:10px; bottom:10px; padding:6px; }
 .ueber.pop { z-index:15; }
+.ueber .fenster { color:#22262b; font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; }
+.ueber .fkopf button { color:#22262b; }
 .ueber.pop .fenster { width:min(420px,100%); max-height:100%; height:auto; align-self:center; }
 .ueber.pop .fenster.breit { width:min(760px,100%); }
 .ueber.pop .finhalt { padding:10px; background:#f4f5f7; min-height:0; }
