@@ -672,7 +672,7 @@ class HargassnerSchemaCard extends HTMLElement {
           <div class="bildfuss"><span></span>
             <button class="knopf-klein" data-gross><ha-icon icon="mdi:magnify-plus-outline"></ha-icon>Grösser anzeigen</button></div></div>
         <div class="raster ${auswahl ? "" : "alle"}">
-          ${auswahl ? `<div class="auswahlkopf">${esc(this._auswahlTitel(auswahl))}<button class="knopf-klein" data-alle>Schliessen</button></div>` : ""}
+          ${auswahl ? `<div class="auswahlkopf"><button class="knopf-klein" data-alle>Schliessen</button></div>` : ""}
           ${kacheln.filter(([g]) => !gruppen || gruppen.includes(g)).map(([, html]) => html).join("")}
         </div></div>
       </div>
