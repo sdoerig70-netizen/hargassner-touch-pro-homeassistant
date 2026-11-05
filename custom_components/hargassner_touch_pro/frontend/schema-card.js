@@ -78,13 +78,18 @@ const STIL = `
 .lage small { display:block; font-size:13.5px; opacity:.85; margin-top:2px; }
 .bild { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); padding:6px; margin-bottom:14px; position:relative; }
 .bild svg { width:100%; height:auto; display:block; }
-.bild .rollen { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.bild .rollen { overflow:hidden; }
 .bildfuss { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:4px 8px 4px; font-size:12px; color:#8a9099; }
 .vollbild { overflow:auto; background:#fff; font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; color:#22262b; touch-action:pan-x pan-y pinch-zoom; }
 .vollbild svg { width:1200px; max-width:none; height:auto; display:block; }
 @media (max-width: 700px) {
+  .karte { padding:8px; }
+  .lage { padding:10px 12px; font-size:15px; margin-bottom:8px; }
+  .lage ha-icon { --mdc-icon-size:26px; }
+  .bild { padding:2px; margin-bottom:8px; }
+  .bild svg { max-height:calc(100vh - 210px); }
+  .bild .nebentext { display:none; }
 }
-.bild .hinweis { position:absolute; left:14px; bottom:10px; font-size:12px; color:#8a9099; }
 [data-teil] { cursor:pointer; }
 [data-teil]:hover .rahmen { stroke:#2b7bd6; stroke-width:3; }
 .fluss { stroke-dasharray:10 14; animation:fliessen 1.1s linear infinite; }
@@ -99,7 +104,9 @@ const STIL = `
 .haupt { display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(0, 1fr); gap:12px; align-items:start; }
 .haupt > * { min-width:0; }
 .haupt .bild { margin-bottom:0; position:sticky; top:8px; }
-@media (max-width: 1100px) { .haupt { grid-template-columns:1fr; } .haupt .bild { position:static; } }
+@media (max-width: 1100px) { .haupt { grid-template-columns:1fr; } .haupt .bild { position:static; } .raster.alle { display:none; } }
+.auswahlkopf { grid-column:1 / -1; display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; }
+.auswahlkopf button { margin-left:auto; }
 .raster { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 235px), 1fr)); gap:10px; }
 .feld { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); padding:11px 12px; display:flex; flex-direction:column; gap:8px; }
 .feld h2 { margin:0; font-size:16px; display:flex; align-items:center; gap:6px; }
@@ -310,7 +317,7 @@ class HargassnerSchemaCard extends HTMLElement {
     const DY = 20;
     const X = (x) => x + DX;
     const Y = (y) => y + DY;
-    let s = `<svg viewBox="0 0 ${breite} 790" role="img" aria-label="Heizung als Schema">
+    let s = `<svg viewBox="8 40 ${breite - 8} 745" role="img" aria-label="Heizung als Schema">
 `;
 
     /* Holzschnitzel-Lager und Förderschnecke */
@@ -446,7 +453,6 @@ class HargassnerSchemaCard extends HTMLElement {
     /* Frischwasserstation: Vorlauf ganz oben rechts, Rücklauf Mitte unten rechts, Warmwasser ins versorgte Haus */
     const wwIndex = f ? hk.findIndex((h) => f.name && String(h.titel || "").includes(f.name)) : -1;
     const wwHaus = f && hk.length ? hk[wwIndex === -1 ? hk.length - 1 : wwIndex] : null;
-    let wwImHaus = "";
     const xWw = wwHaus ? hx(hk.indexOf(wwHaus)) + 34 : 610;
     if (f) {
       const fp = this._an(f.pumpe);
@@ -459,12 +465,8 @@ class HargassnerSchemaCard extends HTMLElement {
         <text x="570" y="172" text-anchor="middle" font-size="20" font-weight="700" fill="${tempFarbe(this._z(f.auslauf_soll))}">${esc(this._grad(f.auslauf_soll))}</text>
         <text x="570" y="200" text-anchor="middle" font-size="11" fill="#6b7280">${esc(wwHaus ? "für " + (wwHaus.titel || "") : "Frischwasserstation")}</text>
         ${this._rohr(`M630 140 H${xWw} V312`, this._z(f.auslauf_soll), zapft, 6)}
-        <text x="${xWw}" y="132" text-anchor="middle" font-size="12" fill="#6b7280">Warmwasser zum Haus</text>
+        <text class="nebentext" x="${xWw}" y="132" text-anchor="middle" font-size="12" fill="#6b7280">Warmwasser zum Haus</text>
       </g>`;
-      // Leitung und Wasserhahn im Haus erst nach den Häusern zeichnen, damit sie sichtbar bleiben
-      wwImHaus = `<g data-teil="warmwasser">${this._rohr(`M${xWw} 282 V312`, this._z(f.auslauf_soll), zapft, 6)}
-        <path d="M${xWw - 14} 312 h28 a6 6 0 0 1 6 6 v6 h-12 v-6 h-22 z" fill="#5b6470"/>
-        ${zapft ? `<path class="fluss" d="M${xWw + 14} 328 V342" stroke="#4aa3ff" stroke-width="4"/>` : ""}</g>`;
     }
 
     /* Heizgruppen auf dem Verteilbalken: Vorlauf Mitte oben rechts, Rücklauf unten rechts, Reserveabgang */
@@ -479,7 +481,7 @@ class HargassnerSchemaCard extends HTMLElement {
       ${this._rohr(`M${xV1} ${yRb} H500 V${Y(yUnten)} H${X(wandR(yUnten))}`, pU, hkFliesst)}
       <rect class="rahmen" x="${xV0 - 4}" y="${yVb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
       <rect class="rahmen" x="${xV0 - 4}" y="${yRb - 8}" width="${xV1 - xV0 + 8}" height="16" rx="4" fill="none" stroke="#3a4048" stroke-width="1.5"/>
-      <text x="${xV0}" y="${yRb + 30}" font-size="12" fill="#6b7280">Verteilbalken</text>
+      <text class="nebentext" x="${xV0}" y="${yRb + 30}" font-size="12" fill="#6b7280">Verteilbalken</text>
     </g>`;
     s += `<g data-teil="reserve">
       <path d="M${xReserve - 14} ${yVb} V${yVb - 50} M${xReserve + 14} ${yRb} V${yVb - 50}" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
@@ -500,16 +502,16 @@ class HargassnerSchemaCard extends HTMLElement {
         <path d="M${x - 31} 635 l13 -10 l13 10 z M${x - 31} 635 l13 10 l13 -10 z" fill="#b08d57"/>
         ${this._pumpe(x - 18, 570, an, -90)}
         <circle cx="${x - 18}" cy="510" r="5" fill="#fff" stroke="#3a4048" stroke-width="2"/>
-        <text x="${x - 38}" y="575" text-anchor="end" font-size="12" fill="#6b7280">P${nr}</text>
-        <text x="${x - 36}" y="640" text-anchor="end" font-size="12" fill="#6b7280">M${nr}</text>
-        <text x="${x - 28}" y="507" text-anchor="end" font-size="12" fill="#6b7280">VF${nr}</text>
+        <text class="nebentext" x="${x - 38}" y="575" text-anchor="end" font-size="12" fill="#6b7280">P${nr}</text>
+        <text class="nebentext" x="${x - 36}" y="640" text-anchor="end" font-size="12" fill="#6b7280">M${nr}</text>
+        <text class="nebentext" x="${x - 28}" y="507" text-anchor="end" font-size="12" fill="#6b7280">VF${nr}</text>
         <text x="${x - 28}" y="523" text-anchor="end" font-size="13" font-weight="600" fill="#22262b">${vl !== null ? komma(vl, 0) + "°" : ""}</text>
         <path class="rahmen" d="M${x - 55} 365 V300 L${x} 258 L${x + 55} 300 V365 Z" fill="#fff" stroke="#3a4048" stroke-width="3"/>
         <text x="${x}" y="325" text-anchor="middle" font-size="15" font-weight="600">${esc(h.titel || "Haus " + (i + 1))}</text>
         <text x="${x}" y="347" text-anchor="middle" font-size="13" fill="#6b7280">${raum !== null ? "innen " + komma(raum, 1) + " °C" : an ? "heizt" : "Pause"}</text>
       </g>`;
     });
-    s += wwImHaus + `</svg>`;
+    s += `</svg>`;
     return s;
   }
 
@@ -647,6 +649,15 @@ class HargassnerSchemaCard extends HTMLElement {
     const ueberZu = !offenUeber || offenUeber.classList.contains("zu");
     const ueberInhalt = !ueberZu ? offenUeber.querySelector(".finhalt").firstElementChild : null;
     const ueberTitel = !ueberZu ? offenUeber.querySelector("#utitel").textContent : "";
+    const auswahl = this._auswahl || null;
+    const gruppen = auswahl ? this._gruppen(auswahl) : null;
+    const kacheln = [
+      ...(a.heizkreise || []).map((h, i) => [`hk${i}`, this._feldHaus(h, i)]),
+      ...(a.frischwasser?.[0] ? [["warmwasser", this._feldWarmwasser(a.frischwasser[0])]] : []),
+      ...(this._v.wartung_tage ? [["wartung", this._feldWartung()]] : []),
+      ...(this._v.lager_rest ? [["lager", this._feldLager()]] : []),
+      ...(a.kessel ? [["kessel", this._feldKessel()]] : []),
+    ];
     this.shadowRoot.innerHTML = `<style>${STIL}</style>
       <div class="karte">
         <div class="kopf">
@@ -657,14 +668,12 @@ class HargassnerSchemaCard extends HTMLElement {
         <div class="lage ${lage.art}"><ha-icon icon="${lage.icon}"></ha-icon><div>${esc(lage.text)}<small>${esc(lage.klein)}</small></div></div>
         <div class="haupt"><div class="bild">
           <div class="rollen">${this._schema()}</div>
-          <div class="bildfuss"><span>Tippen Sie auf einen Teil der Heizung für eine Erklärung.</span>
+          ${auswahl ? `<style>[data-teil="${esc(auswahl)}"] .rahmen { stroke:#2b7bd6; stroke-width:4; }</style>` : ""}
+          <div class="bildfuss"><span></span>
             <button class="knopf-klein" data-gross><ha-icon icon="mdi:magnify-plus-outline"></ha-icon>Grösser anzeigen</button></div></div>
-        <div class="raster">
-          ${(a.heizkreise || []).map((h, i) => this._feldHaus(h, i)).join("")}
-          ${a.frischwasser?.[0] ? this._feldWarmwasser(a.frischwasser[0]) : ""}
-          ${this._v.wartung_tage ? this._feldWartung() : ""}
-          ${this._v.lager_rest ? this._feldLager() : ""}
-          ${a.kessel ? this._feldKessel() : ""}
+        <div class="raster ${auswahl ? "" : "alle"}">
+          ${auswahl ? `<div class="auswahlkopf">${esc(this._auswahlTitel(auswahl))}<button class="knopf-klein" data-alle>Schliessen</button></div>` : ""}
+          ${kacheln.filter(([g]) => !gruppen || gruppen.includes(g)).map(([, html]) => html).join("")}
         </div></div>
       </div>
       <div class="ueber ${ueberZu ? "zu" : ""}" id="ueber"><div class="fenster"><div class="fkopf"><span id="utitel">${esc(ueberTitel)}</span><button data-schliessen>Schliessen</button></div><div class="finhalt"></div></div></div>
@@ -676,50 +685,30 @@ class HargassnerSchemaCard extends HTMLElement {
     }
   }
 
-  /* --------- Erklärungen beim Antippen --------- */
+  /* --------- Antippen: passende Kacheln einblenden --------- */
 
-  _erklaerung(teil) {
-    const a = this._a;
-    const k = a.kessel || {};
-    const p = a.puffer || {};
-    const texte = {
-      lager: ["Holzschnitzel-Lager", `Hier lagern die Holzschnitzel. Ein Rührwerk am Boden und eine Förderschnecke bringen sie automatisch zum Kessel, sobald er brennt.${this._z(this._v.lager_rest) !== null ? ` Geschätzt sind noch etwa ${komma(this._z(this._v.lager_rest), 0)} m³ im Lager, das reicht ${this._tageText(this._z(this._v.lager_reichweite)).replace("in ca. ", "ca. ")}.` : ""}`],
-      kessel: ["Holzkessel", `Der Kessel verbrennt die Holzschnitzel und erwärmt damit Wasser. Dieses warme Wasser fliesst in den Wärmespeicher. Er startet und stoppt von selbst. Zurzeit: ${(this._z(k.leistung) ?? 0) > 0 ? "er brennt" : "er ruht"}, Temperatur ${this._grad(k.temperatur)}.`],
-      puffer: ["Wärmespeicher", `Ein grosser, gut isolierter Wassertank. Er speichert die Wärme vom Kessel, damit die Häuser und das Warmwasser auch dann warm bleiben, wenn der Kessel ruht. Der Kessel füllt ihn von oben mit heissem Wasser. Das Warmwasser nimmt ganz oben das heisseste Wasser, die Häuser etwas tiefer. Abgekühltes Wasser kommt unten zurück. Oben ist das Wasser am heissesten (${this._grad(p.oben)}), unten am kühlsten (${this._grad(p.unten)}). Gefüllt: ${this._z(p.ladung) === null ? "–" : Math.round(this._z(p.ladung)) + " %"}.`],
-      warmwasser: ["Warmwasser-Station", "Erwärmt das Trinkwasser frisch, genau dann, wenn ein Wasserhahn aufgedreht wird. Die Wärme kommt aus dem Wärmespeicher. Es wird also kein Warmwasser auf Vorrat gehalten."],
-      verteiler: ["Leitungen zu den Häusern", "Warmes Wasser fliesst vom Wärmespeicher zu den Häusern, gibt dort in den Heizkörpern Wärme ab und kommt abgekühlt zurück. Die Farbe zeigt die Temperatur: rot heiss, gelb warm, grün lauwarm, blau kühl. Wandernde Striche bedeuten, dass gerade Wasser fliesst."],
-      solar: [
-        "Sonnenkollektor",
-        (this._config.solar && (this._config.solar.kollektor || this._config.solar.pumpe))
-          ? "Auf dem Dach erwärmt die Sonne eine Flüssigkeit. Die Solarpumpe schickt sie durch die Wendel unten im Wärmespeicher. So hilft die Sonne mit, und der Holzkessel muss seltener brennen."
-          : "Der Wärmespeicher hat unten eine Wendel für Sonnenkollektoren. Sie ist vorbereitet, aber zurzeit nicht angeschlossen. Mit Kollektoren auf dem Dach könnte die Sonne im Sommer das Warmwasser und in der Übergangszeit einen Teil der Heizwärme liefern.",
-      ],
-      elektro: ["Elektroeinsatz", "Ein elektrischer Heizstab mit 9 kW im Wärmespeicher. Er ist eine Notlösung, wenn der Holzkessel nicht laufen kann, zum Beispiel bei einer Störung. Strom ist teurer als Holz, darum wird er normalerweise nicht gebraucht."],
-      reserve: ["Reserveabgang", "Ein freier Anschluss am Verteilbalken, abgesperrt mit zwei Ventilen. Hier kann später ein weiterer Heizkreis angeschlossen werden."],
-      ae: ["Ausdehnungsgefäss", "Warmes Wasser braucht mehr Platz als kaltes. Dieses rote Gefäss am Rücklauf zum Kessel fängt das zusätzliche Wasser auf und hält den Druck in den Leitungen gleichmässig. Es muss nicht bedient werden."],
-      umschaltung: [
-        "Rücklauf zum Kessel",
-        this._config.ruecklauf_anschluss === "mitte"
-          ? "Das abgekühlte Wasser für den Kessel wird zurzeit in der Mitte des Wärmespeichers entnommen. So bleibt der untere Teil kühl für die Sonnenwärme. Die Kugelhähne dafür sitzen links am Speicher."
-          : "Das abgekühlte Wasser für den Kessel kommt unten aus dem Wärmespeicher (Kugelhahn offen). Der zweite Anschluss in der Mitte ist mit einem Kugelhahn abgesperrt (grau). Kommt später Solar dazu, wird umgestellt: Mitte öffnen, unten schliessen. Dann bleibt der untere Teil des Speichers kühl für die Sonnenwärme.",
-      ],
-      aussen: ["Aussentemperatur", "Die Heizung misst die Temperatur draussen. Je kälter es ist, desto wärmer schickt sie das Wasser zu den Häusern."],
-    };
-    if (teil.startsWith("fuehler-")) {
-      const name = teil.slice(8);
-      const lage = { BF1: "ganz oben, auf der Höhe des Kesselvorlaufs und der Warmwasser-Station", PF1: "oben, auf der Höhe des Abgangs zu den Häusern", PF2: "in der Mitte", PF3: "unten, wo das abgekühlte Wasser zurückkommt" }[name];
-      texte[teil] = [`Speicherfühler ${name}`, `Dieser Fühler misst die Wassertemperatur ${lage}. Aus den vier Fühlern berechnet die Heizung, wie voll der Wärmespeicher ist und wann der Holzkessel starten soll.`];
+  _gruppen(teil) {
+    const hk = (this._a.heizkreise || []).map((_, i) => `hk${i}`);
+    if (teil.startsWith("hk")) return [teil];
+    if (teil === "warmwasser") return ["warmwasser"];
+    if (teil === "lager") return ["lager", "kessel"];
+    if (teil === "kessel" || teil === "umschaltung" || teil === "ae") return ["kessel", "wartung"];
+    if (teil === "puffer" || teil === "elektro" || teil === "solar" || teil.startsWith("fuehler-")) return ["kessel", "warmwasser"];
+    if (teil === "verteiler" || teil === "reserve" || teil === "aussen") return hk;
+    return null;
+  }
+
+  _auswahlTitel(teil) {
+    if (teil.startsWith("hk")) return this._a.heizkreise?.[+teil.slice(2)]?.titel || "Haus";
+    return { warmwasser: "Warmwasser", lager: "Holzschnitzel-Lager", kessel: "Holzkessel", umschaltung: "Holzkessel", ae: "Holzkessel", puffer: "Wärmespeicher", elektro: "Wärmespeicher", solar: "Wärmespeicher", verteiler: "Häuser", reserve: "Häuser", aussen: "Häuser" }[teil] || (teil.startsWith("fuehler-") ? "Wärmespeicher" : "");
+  }
+
+  _waehleTeil(teil) {
+    this._auswahl = this._auswahl === teil || !this._gruppen(teil) ? null : teil;
+    this._zeichnen();
+    if (this._auswahl && window.matchMedia("(max-width: 1100px)").matches) {
+      requestAnimationFrame(() => this.shadowRoot.querySelector(".raster")?.scrollIntoView({ behavior: "smooth", block: "start" }));
     }
-    let t = texte[teil];
-    if (!t && teil.startsWith("hk")) {
-      const h = a.heizkreise?.[+teil.slice(2)] || {};
-      t = [h.titel || "Haus", `Die Pumpe schickt warmes Wasser zu den Heizkörpern dieses Hauses. Ein Mischventil mischt dabei so viel kühleres Wasser bei, dass die Temperatur genau passt. Zurzeit ${this._an(h.pumpe) ? "heizt es" : "macht es Pause"}, das Wasser zum Haus hat ${this._grad(h.vorlauf)}. Die Temperatur im Haus stellen Sie unten im Feld «${h.titel || "Haus"}» ein.`];
-    }
-    if (!t) return;
-    const el = document.createElement("div");
-    el.className = "erklaer-inhalt";
-    el.innerHTML = `<h3>${esc(t[0])}</h3><p>${esc(t[1])}</p>`;
-    this._ueberOeffnen(t[0], el, true);
   }
 
   /* --------- Überlagerung, Rückfrage, Bedienung --------- */
@@ -752,7 +741,7 @@ class HargassnerSchemaCard extends HTMLElement {
   }
 
   _klick(e) {
-    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil],[data-asche],[data-lager],[data-voll],[data-gross]");
+    const el = e.target.closest("[data-schritt],[data-art],[data-kessel],[data-zp],[data-trend],[data-fach],[data-schliessen],[data-frage],[data-teil],[data-asche],[data-lager],[data-voll],[data-gross],[data-alle]");
     if (!el) return;
     const d = el.dataset;
     if (d.frage) {
@@ -819,7 +808,14 @@ class HargassnerSchemaCard extends HTMLElement {
       u.classList.add("zu");
       u.querySelector(".finhalt").innerHTML = "";
       this._eingebettet = null;
-    } else if (d.teil) this._erklaerung(d.teil);
+    } else if (d.alle !== undefined) {
+      this._auswahl = null;
+      this._zeichnen();
+    } else if (d.teil) {
+      // Im Vollbild-Schema: Fenster schliessen und die Kacheln zeigen
+      if (el.closest(".vollbild")) this.shadowRoot.getElementById("ueber").classList.add("zu");
+      this._waehleTeil(d.teil);
+    }
   }
 
   _waehlen(id, wert) {
